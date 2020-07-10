@@ -12,10 +12,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
-    install_requires=["cvxpy >= 1.1.0a1"],
+    install_requires=["cvxpy >= 1.1.0a1",
+                      "requests",
+                      "setuptools"],
     license="Apache License, Version 2.0",
     url="https://github.com/cvxgrp/cvxpy-analyzer",
-    classifiers=[
-        "Programming Language :: Python :: 3",
-    ],
+    classifiers=["Programming Language :: Python :: 3",],
 )
