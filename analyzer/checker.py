@@ -57,13 +57,13 @@ def might_be_convex(problem, niter=100, tol=1e-8):
 
 if __name__ == "__main__":
     x = cp.Variable(5)
-    prob = cp.Problem(cp.Minimize(cp.norm(x @ x)), [-1 <= x, x <= 1])
+    prob = cp.Problem(cp.Minimize(cp.sqrt(x.T @ x)), [-1 <= x, x <= 1])
     try:
         prob.solve()
     except:
         print("Might be convex: ", might_be_convex(prob))
 
-    prob = cp.Problem(cp.Minimize(-cp.norm(x @ x)), [-1 <= x, x <= 1])
+    prob = cp.Problem(cp.Minimize(-cp.sqrt(x.T @ x)), [-1. <= x, x <= 1])
     try:
         prob.solve()
     except:
