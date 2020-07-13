@@ -29,11 +29,15 @@ def might_be_convex(problem, niter=100, tol=1e-8):
 
     def get_objective_constraint_values(problem, maximize=False):
         if maximize:
-            return np.concatenate([np.array([-problem.objective.value])] +
-                                  [c.expr.value for c in problem.constraints])
+            return np.concatenate(
+                [np.array([-problem.objective.value])]
+                + [c.expr.value for c in problem.constraints]
+            )
         else:
-            return np.concatenate([np.array([problem.objective.value])] +
-                                  [c.expr.value for c in problem.constraints])
+            return np.concatenate(
+                [np.array([problem.objective.value])]
+                + [c.expr.value for c in problem.constraints]
+            )
 
     maximize = isinstance(problem.objective, Maximize)
     might_be_convex = True
@@ -45,8 +49,7 @@ def might_be_convex(problem, niter=100, tol=1e-8):
         f1 = get_objective_constraint_values(problem, maximize)
         set_values(problem, values2)
         f2 = get_objective_constraint_values(problem, maximize)
-        set_values(problem, [(v1 + v2) / 2 for v1,
-                             v2 in zip(values1, values2)])
+        set_values(problem, [(v1 + v2) / 2 for v1, v2 in zip(values1, values2)])
         f12 = get_objective_constraint_values(problem, maximize)
 
         if not ((f1 + f2) / 2 - f12 >= -tol).all():
@@ -54,6 +57,7 @@ def might_be_convex(problem, niter=100, tol=1e-8):
             break
 
     return might_be_convex
+
 
 if __name__ == "__main__":
     x = cp.Variable(5)
@@ -63,7 +67,7 @@ if __name__ == "__main__":
     except:
         print("Might be convex: ", might_be_convex(prob))
 
-    prob = cp.Problem(cp.Minimize(-cp.sqrt(x.T @ x)), [-1. <= x, x <= 1])
+    prob = cp.Problem(cp.Minimize(-cp.sqrt(x.T @ x)), [-1.0 <= x, x <= 1])
     try:
         prob.solve()
     except:
