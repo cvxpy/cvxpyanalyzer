@@ -15,8 +15,7 @@ def query_yes_no(question, default="yes"):
 
     The "answer" return value is True for "yes" or False for "no".
     """
-    valid = {"yes": True, "y": True, "ye": True,
-             "no": False, "n": False}
+    valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
     if default is None:
         prompt = " [y/n] "
     elif default == "yes":
@@ -29,13 +28,12 @@ def query_yes_no(question, default="yes"):
     while True:
         sys.stdout.write(question + prompt)
         choice = input().lower()
-        if default is not None and choice == '':
+        if default is not None and choice == "":
             return valid[default]
         elif choice in valid:
             return valid[choice]
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "
-                             "(or 'y' or 'n').\n")
+            sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
 
 
 def tech_support(problem):
@@ -56,7 +54,9 @@ def tech_support(problem):
 
     # Check that the problem is DCP/convex.
     if not prob.is_dcp():
-        print("The problem is not DCP. You must write the problem so it follows the DCP rules.")
+        print(
+            "The problem is not DCP. You must write the problem so it follows the DCP rules."
+        )
         print("Learn more about the DCP rules at https://dcp.stanford.edu")
         convexish = might_be_convex(problem)
         if not convexish:
@@ -70,26 +70,40 @@ def tech_support(problem):
     except cp.SolverError:
         print("The default solver cannot solve your problem.")
 
-    if problem.status is not cp.OPTIMAL \
-    or not query_yes_no("Are you satisfied with the solution returned by CVXPY?"):
+    if problem.status not in [
+        cp.OPTIMAL,
+        cp.INFEASIBLE,
+        cp.UNBOUNDED,
+    ] or not query_yes_no("Are you satisfied with the solution returned by CVXPY?"):
         print("Try solving your problem with a different solver.")
         print()
         installed = get_solvers(problem)
         print()
-        print("Instructions for using non-default solvers are here:\n"
-              "https://cvxpy.org/tutorial/advanced/index.html#choosing-a-solver\n"
-              "Instructions for installing new solvers are here:\n"
-              "https://cvxpy.org/install/index.html"
+        print(
+            "Instructions for using non-default solvers are here:\n"
+            "https://cvxpy.org/tutorial/advanced/index.html#choosing-a-solver\n"
+            "Instructions for installing new solvers are here:\n"
+            "https://cvxpy.org/install/index.html"
         )
+    print()
+
 
 if __name__ == "__main__":
+    print("Not DCP.\n")
     x = cp.Variable(5)
     prob = cp.Problem(cp.Minimize(cp.sqrt(x.T @ x)), [-1 <= x, x <= 1])
     tech_support(prob)
 
+    print("Not convex.\n")
     prob = cp.Problem(cp.Minimize(-cp.sqrt(x.T @ x)), [-1 <= x, x <= 1])
     tech_support(prob)
 
+    print("DCP.\n")
     x = cp.Variable(5)
     prob = cp.Problem(cp.Minimize(cp.sum_squares(x)), [-1 <= x, x <= 1])
+    tech_support(prob)
+
+    print("Not feasible.\n")
+    x = cp.Variable(5)
+    prob = cp.Problem(cp.Minimize(cp.sum_squares(x)), [2 <= x, x <= 1])
     tech_support(prob)
