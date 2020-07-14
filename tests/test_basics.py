@@ -26,4 +26,3 @@ def test_solvers():
     prob = cp.Problem(cp.Minimize(cp.sum_squares(x)), [-1 <= x, x <= 1])
     solvers = get_solvers(prob)
     assert len(solvers) > 0
-
