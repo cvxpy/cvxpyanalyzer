@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 
 setup(
-    name="cvxpy-analyzer",
+    name="cvxpyanalyzer",
     version="0.1.2",
     description="Analyzer for CVXPY problems",
     long_description=long_description,
