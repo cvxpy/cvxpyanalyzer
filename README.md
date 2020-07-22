@@ -1,6 +1,6 @@
 A toolkit for analyzing CVXPY problems.
 
-Install from source (i.e., clone the repository and run ``python setup.py install``)
+Install via ``pip install cvxpyanalyzer``.
 
 Example usage:
 ```
