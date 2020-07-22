@@ -7,11 +7,11 @@ with open("README.md", "r") as fh:
 
 setup(
     name="cvxpyanalyzer",
-    version="0.1.2",
+    version="0.0.1",
     description="Analyzer for CVXPY problems",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=find_packages(),
+    packages=["analyzer"],
     install_requires=["cvxpy >= 1.1.0a1", "requests", "setuptools"],
     license="Apache License, Version 2.0",
     url="https://github.com/cvxgrp/cvxpy-analyzer",
