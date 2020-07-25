@@ -24,7 +24,7 @@ def save_problem(prob, filename):
     """Save problem term data to a json file.
     """
     term_dict = process_problem(prob)
-    with open(filename, 'w') as outfile:
+    with open(filename, "w") as outfile:
         json.dump(term_dict, outfile)
 
 
@@ -35,4 +35,4 @@ if __name__ == "__main__":
     prob = cp.Problem(cp.Minimize(cp.sum_squares(x)), [-1 <= x, x <= 1])
     print(process_problem(prob))
 
-    save_problem(prob, 'test.json')
+    save_problem(prob, "test.json")
