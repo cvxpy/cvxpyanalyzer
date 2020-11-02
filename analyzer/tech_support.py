@@ -53,7 +53,7 @@ def tech_support(problem):
             return
 
     # Check that the problem is DCP/convex.
-    if not prob.is_dcp():
+    if not problem.is_dcp():
         print(
             "The problem is not DCP. You must write the problem so it follows the DCP rules."
         )

@@ -31,12 +31,12 @@ def might_be_convex(problem, niter=100, tol=1e-8):
         if maximize:
             return np.concatenate(
                 [np.array([-problem.objective.value])]
-                + [c.expr.value for c in problem.constraints]
+                + [np.atleast_1d(c.expr.value) for c in problem.constraints]
             )
         else:
             return np.concatenate(
                 [np.array([problem.objective.value])]
-                + [c.expr.value for c in problem.constraints]
+                + [np.atleast_1d(c.expr.value) for c in problem.constraints]
             )
 
     maximize = isinstance(problem.objective, Maximize)
