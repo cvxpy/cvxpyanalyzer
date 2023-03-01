@@ -10,9 +10,11 @@ from cvxpy.problems.objective import Objective
 
 import operator
 
-priority0 = ['**']
+from Visual.binary_tree import Node, Edge
+
 priority1 = ['@', '*', '/']
 priority2 = ['+', '-']
+op = ['**', '@', '*', '/', '+', '-']
 
 
 def is_operator(s):
@@ -33,23 +35,33 @@ def is_float(s):
 class Visual:
     def __init__(self, obj: Objective):
         self.name = obj.NAME
-        self.expr = str(obj.expr).replace("+ -", " - ")
+        self.expr = str(obj.expr)
         self.parameters = []
         self.variables = []
         self.operators = []
         self.func = []
+        self.root = Edge(self.expr, None)
+        self.create_lists(self.expr)
+        self.split_expr(self.root)
+        self.root.print_tree()
 
-    def create_lists(self):
+    def create_lists(self, exp):
         isFunc = False
         isMatrix = False
         func_string = ""
         matrix_string = ""
-        for s in self.expr.split():
+        list_op = []
+        exp2 = exp.replace("+ -", " - ")
+        for s in exp2.split():
+            print("s = ", s)
             # --------func---------
             if ')' in s:
                 isFunc = False
                 func_string += " " + s
                 self.func.append(func_string)
+                self.operators.append(func_string)
+                list_op.append(func_string)
+                print("func: ", func_string)
                 func_string = ""
                 continue
             if isFunc:
@@ -86,28 +98,38 @@ class Visual:
                 continue
             # --------variables---------
 
-            self.operators.append(s)
+            if s in op:
+                self.operators.append(s)
+                list_op.append(s)
+        return list_op
 
-    def split_expr(self):
-        if len(self.operators) == 0:
+    def split_expr(self, exp):
+        o = self.priority(exp.expr)
+        if o is None:
             return
+        else:
+            node = Node(exp, o)
+            node.insert()
+            self.split_expr(node.right)
+            self.split_expr(node.left)
 
     def show(self):
         pass
 
-    def priority(self):
+    def priority(self, exp):
         pr = 0
         ans = ''
-        for op in self.operators:
-            if op in priority2:
-                self.operators.remove(op)
-                return op
-            if op in priority1:
+        ops = self.create_lists(exp)
+        if not ops:
+            return None
+        for o in ops:
+            if o in priority2:
+                return o
+            if o in priority1:
                 pr = 1
-                ans = op
-            if op in priority0 and pr == 0:
-                ans = op
-        self.operators.remove(ans)
+                ans = o
+            elif pr == 0:
+                ans = o
         return ans
 
 
@@ -144,13 +166,14 @@ x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
 # Frame and solve the problem
 
 x = Variable(n)
-y = Variable(n)
-objective = Minimize(0.5 * quad_form(x, P) + cp.sum_squares(x) - q.T @ x + r)
+y = Variable()
+objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r)
+# objective = cp.Minimize((x - y) ** 2)
 constraints = [x >= -1, x <= 1]
 
-p = Problem(objective, constraints)
-# The optimal objective is returned by p.solve().
-result = p.solve()
+# p = Problem(objective, constraints)
+# # The optimal objective is returned by p.solve().
+# result = p.solve()
 print(str(objective.expr))
 
 # expression = "2 * math.pow(3, 2) + math.sqrt(16)"
@@ -158,12 +181,10 @@ print(str(objective.expr))
 #
 # print(tokens)
 
-for s in str(objective.expr).split():
-    print("s= ", s)
+# for s in str(objective.expr).split():
+#     print("s= ", s)
 
 v = Visual(objective)
-v.split_expr()
-print(v.func)
-print(v.parameters)
-print(v.variables)
-print(v.operators)
+# print(v.func)
+# print(v.parameters)
+# print(v.variables)
