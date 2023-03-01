@@ -53,7 +53,6 @@ class Visual:
         list_op = []
         exp2 = exp.replace("+ -", " - ")
         for s in exp2.split():
-            print("s = ", s)
             # --------func---------
             if ')' in s:
                 isFunc = False
@@ -61,7 +60,6 @@ class Visual:
                 self.func.append(func_string)
                 self.operators.append(func_string)
                 list_op.append(func_string)
-                print("func: ", func_string)
                 func_string = ""
                 continue
             if isFunc:
@@ -107,11 +105,25 @@ class Visual:
         o = self.priority(exp.expr)
         if o is None:
             return
+        if o in self.func:
+            # print("o= ",o)
+            index_first = o.index('(')
+            index_sec = o.index(')')
+            newExpre = o[index_first + 1: index_sec]
+            param = newExpre.split(',')
+            node = Node(exp, o.split('(')[0])
+            # print("value: ",node.value)
+            for p in param:
+                edge = Edge(p, node)
+                node.sons.append(edge)
+            node.father.son = node
+            for e in node.sons:
+                self.split_expr(e)
         else:
             node = Node(exp, o)
             node.insert()
-            self.split_expr(node.right)
-            self.split_expr(node.left)
+            for p in node.sons:
+                self.split_expr(p)
 
     def show(self):
         pass
