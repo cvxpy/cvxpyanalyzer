@@ -1,3 +1,8 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+from networkx import Graph
+
+
 class Edge:
     def __init__(self, obj: str, father, flag=0):
         self.expr = obj
@@ -26,10 +31,14 @@ class Node:
         self.father.son = self
 
     def print_tree(self):
-        print(self.father.expr)
-        print(self.value)
+        print("expression:", self.father.expr)
+        print("operator:", self.value, "[")
         for e in self.sons:
             if e.son:
                 e.son.print_tree()
             else:
                 print(e.expr)
+        print("]")
+
+
+

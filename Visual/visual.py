@@ -1,6 +1,7 @@
 import re
 from email.headerregistry import Group
 import cvxpy as cp
+import networkx as nx
 from cvxpy import Expression
 
 import cvxopt
@@ -9,6 +10,9 @@ from cvxpy import Minimize, Problem, Variable, quad_form
 from cvxpy.problems.objective import Objective
 
 import operator
+
+from matplotlib import pyplot as plt
+from networkx import Graph
 
 from Visual.binary_tree import Node, Edge
 
@@ -35,6 +39,8 @@ def is_float(s):
 class Visual:
     def __init__(self, obj: Objective):
         self.name = obj.NAME
+        # self.g = nx.Graph()
+        # self.g.add_node("first")
         self.expr = str(obj.expr)
         self.parameters = []
         self.variables = []
@@ -44,6 +50,7 @@ class Visual:
         self.create_lists(self.expr)
         self.split_expr(self.root)
         self.root.print_tree()
+        self.create_tree()
 
     def create_lists(self, exp):
         isFunc = False
@@ -112,6 +119,7 @@ class Visual:
             newExpre = o[index_first + 1: index_sec]
             param = newExpre.split(',')
             node = Node(exp, o.split('(')[0])
+            # self.g.add_node(o.split('(')[0])
             # print("value: ",node.value)
             for p in param:
                 edge = Edge(p, node)
@@ -127,6 +135,28 @@ class Visual:
 
     def show(self):
         pass
+
+    def create_tree(self):
+        g = nx.Graph()
+        g.add_node("first")
+        g.add_node(self.root.son.value)
+        g.add_edge("first", self.root.son.value, label=self.root.expr)
+        self.create_tree_r(g, self.root.son)
+        pos = nx.spring_layout(g)
+        edge_labels = nx.get_edge_attributes(g, 'label')
+        nx.draw(g, pos, with_labels=True)
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
+        plt.show()
+
+    def create_tree_r(self, g: Graph, node: Node):
+        for s in node.sons:
+            if s.son:
+                g.add_node(s.son.value)
+                g.add_edge(s.son, node.value, label=s.expr)
+                self.create_tree_r(g, s.son)
+            else:
+                g.add_node("end")
+                g.add_edge("end", node.value)
 
     def priority(self, exp):
         pr = 0
