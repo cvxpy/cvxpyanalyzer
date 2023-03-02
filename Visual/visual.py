@@ -14,7 +14,7 @@ import operator
 from matplotlib import pyplot as plt
 from networkx import Graph
 
-from Visual.binary_tree import Node, Edge
+from Visual.binary_tree import Node
 
 priority1 = ['@', '*', '/']
 priority2 = ['+', '-']
@@ -39,18 +39,16 @@ def is_float(s):
 class Visual:
     def __init__(self, obj: Objective):
         self.name = obj.NAME
-        # self.g = nx.Graph()
-        # self.g.add_node("first")
         self.expr = str(obj.expr)
         self.parameters = []
         self.variables = []
         self.operators = []
         self.func = []
-        self.root = Edge(self.expr, None)
+        self.root = Node(None, self.expr, 0)
         self.create_lists(self.expr)
         self.split_expr(self.root)
         self.root.print_tree()
-        self.create_tree()
+        # self.create_tree()
 
     def create_lists(self, exp):
         isFunc = False
@@ -108,30 +106,16 @@ class Visual:
                 list_op.append(s)
         return list_op
 
-    def split_expr(self, exp):
+    def split_expr(self, exp: Node):
         o = self.priority(exp.expr)
         if o is None:
             return
         if o in self.func:
-            # print("o= ",o)
-            index_first = o.index('(')
-            index_sec = o.index(')')
-            newExpre = o[index_first + 1: index_sec]
-            param = newExpre.split(',')
-            node = Node(exp, o.split('(')[0])
-            # self.g.add_node(o.split('(')[0])
-            # print("value: ",node.value)
-            for p in param:
-                edge = Edge(p, node)
-                node.sons.append(edge)
-            node.father.son = node
-            for e in node.sons:
-                self.split_expr(e)
+            exp.insert_func(o)
         else:
-            node = Node(exp, o)
-            node.insert()
-            for p in node.sons:
-                self.split_expr(p)
+            exp.insert(o)
+        for p in exp.sons[0].sons:
+            self.split_expr(p)
 
     def show(self):
         pass
@@ -174,28 +158,6 @@ class Visual:
                 ans = o
         return ans
 
-
-# def visual(objective):
-#     str_objective = str(objective.expr)
-#     print(str_objective)
-#     split_objective = str_objective.split()
-#     print(objective.NAME)
-#     print(objective.args)
-
-
-# n = 4
-# A = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]]
-# b = [1, 2, 3]
-# x = cp.Variable(n)
-# y = cp.Variable()
-#
-# objective = cp.Minimize(cp.sum_squares(A@x+b+y))
-#
-# constraints = [x <= 0, x <= 1, y <= 1]
-# prob = cp.Problem(objective, constraints)
-# prob.solve()
-#
-# visual(objective)
 
 n = 3
 P = cvxopt.matrix([13, 12, -2,
