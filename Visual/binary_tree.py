@@ -4,21 +4,28 @@ from networkx import Graph
 
 
 class Node:
-    def __init__(self, node, expr: str, flag=0):
+    uniqName = 0
+
+    def __init__(self, node, expr: str, number: int, flag=0):
         self.father = node
         self.sons = []
         self.expr = expr
         self.flag = flag  # flag = 1 ->operator , flag = 0 ->expr
+        self.name = self.uniqName
+        Node.uniqName += 1
+        self.number = number
 
     def insert(self, op: str):
         new_op = op
         if op == '-':
             new_op = "+ -"
-        node = Node(self, op, 1)
+        node = Node(self, op, 1, 0)
         self.sons.append(node)
         ans = self.expr.split(new_op, 1)
+        j = 0
         for i in range(len(ans)):
-            node.sons.append(Node(node, ans[i], 0))
+            node.sons.append(Node(node, ans[i], 0, j))
+            j += 1
 
     def insert_func(self, op: str):
         index_first = op.index('(')

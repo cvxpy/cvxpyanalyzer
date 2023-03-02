@@ -1,24 +1,21 @@
-import networkx as nx
-import matplotlib.pyplot as plt
+import tkinter as tk
 
-# Create an empty graph
-G = nx.Graph()
+from future.moves.tkinter import ttk
 
-# Add nodes
-G.add_node(1)
-G.add_node(2)
-G.add_node(3)
-G.add_node(4)
+# Create a window
+window = tk.Tk()
+window.title("My GUI")
 
-# Add edges with weights
-G.add_edge(1, 2, weight=0.5)
-G.add_edge(1, 3, weight=1.0)
-G.add_edge(2, 4, weight=2.2)
-G.add_edge(3, 4, weight=3.5)
+# Create a Treeview widget
+tree = ttk.Treeview(window)
 
-# Draw the graph
-pos = nx.spring_layout(G)
-labels = nx.get_edge_attributes(G, 'weight')
-nx.draw(G, pos, with_labels=True)
-nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
-plt.show()
+# Define the tree structure
+tree.insert("", "0", "parent", text="Parent")
+tree.insert("parent", "0", "child1", text="Child 1")
+tree.insert("parent", "1", "child2", text="Child 2")
+
+# Pack the Treeview widget
+tree.pack()
+
+# Run the event loop
+window.mainloop()

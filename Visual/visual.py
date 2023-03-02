@@ -1,18 +1,14 @@
-import re
-from email.headerregistry import Group
+import tkinter as tk
+from tkinter.ttk import Treeview
+import tkinter as tk
+from tkinter import font, ttk
+
+from future.moves.tkinter import ttk
 import cvxpy as cp
-import networkx as nx
-from cvxpy import Expression
-
 import cvxopt
-
 from cvxpy import Minimize, Problem, Variable, quad_form
 from cvxpy.problems.objective import Objective
-
 import operator
-
-from matplotlib import pyplot as plt
-from networkx import Graph
 
 from Visual.binary_tree import Node
 
@@ -44,11 +40,11 @@ class Visual:
         self.variables = []
         self.operators = []
         self.func = []
-        self.root = Node(None, self.expr, 0)
+        self.root = Node(None, self.expr, 0, 0)
         self.create_lists(self.expr)
         self.split_expr(self.root)
         self.root.print_tree()
-        # self.create_tree()
+        self.show()
 
     def create_lists(self, exp):
         isFunc = False
@@ -118,29 +114,40 @@ class Visual:
             self.split_expr(p)
 
     def show(self):
-        pass
+        window = tk.Tk()
+        window.title("My GUI")
 
-    def create_tree(self):
-        g = nx.Graph()
-        g.add_node("first")
-        g.add_node(self.root.son.value)
-        g.add_edge("first", self.root.son.value, label=self.root.expr)
-        self.create_tree_r(g, self.root.son)
-        pos = nx.spring_layout(g)
-        edge_labels = nx.get_edge_attributes(g, 'label')
-        nx.draw(g, pos, with_labels=True)
-        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
-        plt.show()
+        # Create a Treeview widget
+        tree = ttk.Treeview(window)
+        self.create_tree_r(tree, self.root)
+        font = tk.font.Font()
 
-    def create_tree_r(self, g: Graph, node: Node):
-        for s in node.sons:
-            if s.son:
-                g.add_node(s.son.value)
-                g.add_edge(s.son, node.value, label=s.expr)
-                self.create_tree_r(g, s.son)
+        # Use the font object to measure the width of the text
+        width = font.measure(self.root.expr)
+
+        # Set the width of the first column to the measured width
+        tree.column("#0", width=width)
+        tree.configure(height=1000)
+        # Pack the Treeview widget
+        tree.pack()
+        # Run the event loop
+        window.mainloop()
+
+    def create_tree_r(self, tree: Treeview, node: Node):
+        # Define the tree structure
+        if node.father:
+            if node.sons:
+                tree.insert(node.father.name, node.number, node.name, text=node.expr)
+                tree.insert(node.name, node.sons[0].number, node.sons[0].name, text=node.sons[0].expr)
+                for son in node.sons[0].sons:
+                    self.create_tree_r(tree, son)
             else:
-                g.add_node("end")
-                g.add_edge("end", node.value)
+                tree.insert(node.father.name, node.number, node.name, text=node.expr)
+        else:
+            tree.insert("", "end", "root", text=node.expr)
+            tree.insert("root", node.number, node.sons[0].name, text=node.sons[0].expr)
+            for son in node.sons[0].sons:
+                self.create_tree_r(tree, son)
 
     def priority(self, exp):
         pr = 0
@@ -158,6 +165,11 @@ class Visual:
                 ans = o
         return ans
 
+    def draw_graph(self):
+        pass
+
+    def draw_constrain(self):
+        pass
 
 n = 3
 P = cvxopt.matrix([13, 12, -2,
