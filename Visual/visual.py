@@ -13,7 +13,7 @@ import operator
 from Visual.binary_tree import Node
 
 priority1 = ['@', '*', '/']
-priority2 = ['+', '-']
+priority2 = ['+', '-', '+ -']
 op = ['**', '@', '*', '/', '+', '-']
 
 
@@ -34,8 +34,9 @@ def is_float(s):
 
 class Visual:
     def __init__(self, obj: Objective):
+        self.ob = obj
         self.name = obj.NAME
-        self.expr = str(obj.expr)
+        self.expr = str(obj.expr).replace("+ -", " - ")
         self.parameters = []
         self.variables = []
         self.operators = []
@@ -49,11 +50,20 @@ class Visual:
     def create_lists(self, exp):
         isFunc = False
         isMatrix = False
+        isPlus = False
         func_string = ""
         matrix_string = ""
         list_op = []
-        exp2 = exp.replace("+ -", " - ")
-        for s in exp2.split():
+        for s in exp.split():
+            if isPlus:
+                if s[0] == '-':
+                    self.operators.append('+ -')
+                    list_op.append('+ -')
+                    s = s[1:]
+                else:
+                    self.operators.append('+')
+                    list_op.append('+')
+                isPlus = False
             # --------func---------
             if ')' in s:
                 isFunc = False
@@ -98,8 +108,11 @@ class Visual:
             # --------variables---------
 
             if s in op:
-                self.operators.append(s)
-                list_op.append(s)
+                if '+' in s:
+                    isPlus = True
+                else:
+                    self.operators.append(s)
+                    list_op.append(s)
         return list_op
 
     def split_expr(self, exp: Node):
@@ -116,7 +129,6 @@ class Visual:
     def show(self):
         window = tk.Tk()
         window.title("My GUI")
-
         # Create a Treeview widget
         tree = ttk.Treeview(window)
         self.create_tree_r(tree, self.root)
@@ -165,11 +177,32 @@ class Visual:
                 ans = o
         return ans
 
+    def check_2_dimensions(self):
+        self.create_lists(self.expr)
+        dim = [' 0.0', ' 1.0', ' 2.0']
+        if self.func:
+            for f in self.func:
+                if "power" in f:
+                    index_first = f.index('(')
+                    index_sec = f.index(')')
+                    newExpr = f[index_first + 1: index_sec]
+                    param = newExpr.split(',')
+                    if param[1] not in dim:
+                        return False
+        for var in self.ob.variables():
+            if var.shape != ():
+                return False
+        for parm in self.parameters:
+            if '[' in parm:
+                return False
+        return True
+
     def draw_graph(self):
-        pass
+        self.check_2_dimensions()
 
     def draw_constrain(self):
         pass
+
 
 n = 3
 P = cvxopt.matrix([13, 12, -2,
@@ -183,7 +216,10 @@ x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
 
 x = Variable(n)
 y = Variable()
-objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r)
+z = Variable(n)
+objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r + y)
+# objective = Minimize((x - y) ** 2 + quad_form(z, P))
+
 # objective = cp.Minimize((x - y) ** 2)
 constraints = [x >= -1, x <= 1]
 
@@ -201,6 +237,8 @@ print(str(objective.expr))
 #     print("s= ", s)
 
 v = Visual(objective)
+
+print(v.check_2_dimensions())
 # print(v.func)
 # print(v.parameters)
 # print(v.variables)

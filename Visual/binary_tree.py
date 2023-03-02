@@ -17,25 +17,50 @@ class Node:
 
     def insert(self, op: str):
         new_op = op
-        if op == '-':
-            new_op = "+ -"
-        node = Node(self, op, 1, 0)
+        if op == '+ -':
+            new_op = "-"
+        node = Node(self, new_op, 0, 1)
+        count = -1
+        check1 = False
+        check2 = False
+        for i in self.expr:
+            count += 1
+            if i == '[':
+                check2 = True
+                continue
+            if i == ']':
+                check2 = False
+                continue
+            if i == '(':
+                check1 = True
+                continue
+            if i == ')':
+                check1 = False
+                continue
+            if i == new_op and check1 == False and check2 == False:
+                break
+
         self.sons.append(node)
-        ans = self.expr.split(new_op, 1)
+        ans= [self.expr[:count], self.expr[count + 1:]]
+        # ans = self.expr.split(op, count)
         j = 0
         for i in range(len(ans)):
-            node.sons.append(Node(node, ans[i], 0, j))
+            print("ans[i]",ans[i])
+            node.sons.append(Node(node, ans[i], j, 0))
             j += 1
 
     def insert_func(self, op: str):
+        print("op:", op)
         index_first = op.index('(')
         index_sec = op.index(')')
         newExpr = op[index_first + 1: index_sec]
-        node = Node(self, op.split('(')[0], 1)
+        node = Node(self, op.split('(')[0], 0, 1)
         self.sons.append(node)
         param = newExpr.split(',')
+        j = 0
         for p in param:
-            node.sons.append(Node(node, p, 0))
+            node.sons.append(Node(node, p, j, 0))
+            j += 1
 
     def print_tree(self):
         if self.flag == 0:
