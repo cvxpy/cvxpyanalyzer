@@ -14,6 +14,18 @@ class Node:
         self.name = self.uniqName
         Node.uniqName += 1
         self.number = number
+    def CheckinSons(self,expr: str):
+        for s in self.sons:
+            if s.expr == expr:
+                return True
+        return False
+    def NodeSon(self,expr: str):
+        if not self.sons:
+            return None
+        for s in self.sons:
+            if s.expr == expr:
+                return s
+        return None
 
     def insert(self, op: str):
         new_op = op
@@ -45,12 +57,12 @@ class Node:
         # ans = self.expr.split(op, count)
         j = 0
         for i in range(len(ans)):
-            print("ans[i]",ans[i])
+            # print("ans[i]",ans[i])
             node.sons.append(Node(node, ans[i], j, 0))
             j += 1
 
     def insert_func(self, op: str):
-        print("op:", op)
+        # print("op:", op)
         index_first = op.index('(')
         index_sec = op.index(')')
         newExpr = op[index_first + 1: index_sec]
@@ -64,11 +76,11 @@ class Node:
 
     def print_tree(self):
         if self.flag == 0:
-            print("expression:", self.expr)
+            # print("expression:", self.expr)
             for e in self.sons:
                 e.print_tree()
                 print("]")
         else:
-            print("operator:", self.expr, "[")
+            # print("operator:", self.expr, "[")
             for e in self.sons:
                 e.print_tree()
