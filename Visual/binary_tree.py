@@ -16,7 +16,7 @@ class Node:
         self.number = number
     def CheckinSons(self,expr: str):
         for s in self.sons:
-            if s.expr == expr:
+            if s.expr.__contains__(expr):
                 return True
         return False
     def NodeSon(self,expr: str):

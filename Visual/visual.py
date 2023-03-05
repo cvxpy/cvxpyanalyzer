@@ -33,7 +33,7 @@ def is_float(s):
 
 class Visual:
     """
-    from Visual import visual
+    >>> from Visual import visual
     >>> import numpy as np
     >>> from Visual import binary_tree
     >>> from tkinter.ttk import Treeview
@@ -94,6 +94,8 @@ class Visual:
     >>> v.root.CheckinSons('h')
     False
     >>> n = v.root.NodeSon('@')
+    >>> n.CheckinSons('h')
+    True
     >>> n.CheckinSons(n.sons[0].expr)
     True
     >>> n.CheckinSons('c')
@@ -111,7 +113,27 @@ class Visual:
     >>> n.CheckinSons('x')
     False
 
-    >>>
+    >>> objective=cp.Maximize(h)
+    >>> v = Visual(objective)
+    >>> v.root.CheckinSons('+')
+    False
+    >>>  if v.root.sons.len() == 0
+    True
+    >>> objective=Minimize(quad_form(x, P))
+    >>> stri=str(objective.expr).replace("+ -", " - ")
+    >>> print(stri)
+    True
+    >>> v = Visual(objective)
+    >>> v.root.CheckinSons('QuadForm')
+    True
+    >>> v.root.CheckinSons('var1')
+    False
+    >>> n=v.root.NodeSon('QuadForm')
+    >>> n.CheckinSons('var1')
+    True
+    >>> n.CheckinSons(str(P))
+    True
+
 
 
 
