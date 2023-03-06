@@ -1,5 +1,5 @@
 """
-    >>> from Visual import visual
+    >>> from Visual.visual import *
     >>> import numpy as np
     >>> from Visual import binary_tree
     >>> from tkinter.ttk import Treeview
@@ -51,8 +51,6 @@
     >>> objective=cp.Maximize(volume)
     >>> v = Visual(objective)
     >>> stri=str(objective.expr).replace("+ -", " - ")
-    >>> print(stri)
-    True
     >>> stri==v.root.expr
     True
     >>> v.root.CheckinSons('@')
@@ -83,12 +81,10 @@
     >>> v = Visual(objective)
     >>> v.root.CheckinSons('+')
     False
-    >>>  if v.root.sons.len() == 0
-    True
+    >>> len(v.root.sons)
+    0
     >>> objective=Minimize(quad_form(x, P))
     >>> stri=str(objective.expr).replace("+ -", " - ")
-    >>> print(stri)
-    True
     >>> v = Visual(objective)
     >>> v.root.CheckinSons('QuadForm')
     True
@@ -100,3 +96,6 @@
     >>> n.CheckinSons(str(P))
     True
 """
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
