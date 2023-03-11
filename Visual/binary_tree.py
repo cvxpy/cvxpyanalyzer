@@ -4,9 +4,14 @@ class Node:
 
     def __init__(self, node, expr: str, flag=0):
         """
+        >>> Node.uniqName ==0
+        True
         >>> n = Node(None,'h @ w @ x',0)
         >>> n.uniqName == 1
         True
+        >>> s = Node(None, 'x',0)
+        >>> n.uniqName == 1
+        False
 
         """
         # The father of this node - for every operator the father is of type expression
