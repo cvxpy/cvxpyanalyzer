@@ -24,12 +24,14 @@
     >>> objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r + y)
     >>> v = Visual(objective)
     >>> stri=str(objective.expr).replace("+ -", " - ")
+    >>> print(str(objective.expr).replace("+ -", " - "))
+    True
     >>> stri==v.root.expr
     True
-    >>> v.root.CheckinSons('-')
+    >>> v.root.checkin_sons('-')
     True
-    >>> n=v.root.NodeSon('-')
-    >>> n.CheckinSons('0.5 @ QuadForm(var1, [[13. 12. -2.][12. 17.  6.][-2.  6. 12.]])')
+    >>> n=v.root.node_son('-')
+    >>> n.checkin_sons('0.5 @ QuadForm(var1, [[13. 12. -2.][12. 17.  6.][-2.  6. 12.]])')
     True
     >>> A_wall = 100
     >>> A_flr = 10
@@ -53,47 +55,59 @@
     >>> stri=str(objective.expr).replace("+ -", " - ")
     >>> stri==v.root.expr
     True
-    >>> v.root.CheckinSons('@')
+    >>> v.root.checkin_sons('@')
     True
-    >>> v.root.CheckinSons('h')
+    >>> v.root.checkin_sons('h')
     False
-    >>> n = v.root.NodeSon('@')
-    >>> n.CheckinSons('h')
+    >>> n = v.root.node_son('@')
+    >>> n.checkin_sons('h')
     True
-    >>> n.CheckinSons(n.sons[0].expr)
+    >>> n.checkin_sons(n.sons[0].expr)
     True
-    >>> n.CheckinSons('c')
+    >>> n.checkin_sons('c')
     False
-    >>> n.CheckinSons(n.sons[1].expr)
+    >>> n.checkin_sons(n.sons[1].expr)
     True
-    >>> n=n.NodeSon(n.sons[1].expr)
-    >>> n.CheckinSons('@')
+    >>> n=n.node_son(n.sons[1].expr)
+    >>> n.checkin_sons('@')
     True
-    >>> n=n.NodeSon('@')
-    >>> n.CheckinSons(n.sons[0].expr)
+    >>> n=n.node_son('@')
+    >>> n.checkin_sons(n.sons[0].expr)
     True
-    >>> n.CheckinSons(n.sons[1].expr)
+    >>> n.checkin_sons(n.sons[1].expr)
     True
-    >>> n.CheckinSons('x')
+    >>> n.checkin_sons('x')
     False
 
     >>> objective=cp.Maximize(h)
     >>> v = Visual(objective)
-    >>> v.root.CheckinSons('+')
+    >>> v.root.checkin_sons('+')
     False
     >>> len(v.root.sons)
     0
     >>> objective=Minimize(quad_form(x, P))
     >>> stri=str(objective.expr).replace("+ -", " - ")
     >>> v = Visual(objective)
-    >>> v.root.CheckinSons('QuadForm')
+    >>> v.root.checkin_sons('QuadForm')
     True
-    >>> v.root.CheckinSons('var1')
+    >>> v.root.checkin_sons('var1')
     False
-    >>> n=v.root.NodeSon('QuadForm')
-    >>> n.CheckinSons('var1')
+    >>> n=v.root.node_son('QuadForm')
+    >>> n.checkin_sons('var1')
     True
-    >>> n.CheckinSons(str(P))
+    >>> n.checkin_sons(str(P))
+    True
+    >>> volume = h * w + d
+    >>> objective=cp.Maximize(volume)
+    >>> v = Visual(objective)
+    >>> v.root.checkin_sons('@')
+    False
+    >>> v.root.checkin_sons('+')
+    True
+    >>> n=v.root.node_son('+')
+    >>> n.checkin_sons('d')
+    True
+    >>> n.checkin_sons('h @ w')
     True
 """
 if __name__ == '__main__':
