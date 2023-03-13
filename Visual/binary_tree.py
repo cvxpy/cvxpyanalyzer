@@ -45,12 +45,10 @@ class Node:
 
     # ---for test---
 
-    """
-    This function get an operator and uses it to split the expression and create new nodes
-    """
 
     def insert(self, op: str):
         """
+        This function get an operator and uses it to split the expression and create new nodes
         >>> n = Node(None,'h @ w @ x',0)
         >>> len(n.sons)
         0
@@ -93,13 +91,11 @@ class Node:
         for i in range(len(ans)):
             node.sons.append(Node(node, ans[i], 0))
 
-    """
-    This function inserts a function type operator and 
-    this means that the expression should be split according to the number of parameters the function accepts
-    """
 
     def insert_func(self, op: str):
         """
+          This function inserts a function type operator and
+          this means that the expression should be split according to the number of parameters the function accepts
         >>> n = Node(None,'QuadForm(var1, [[13. 12. -2.][12. 17.  6.][-2.  6. 12.]])  - quad_over_lin(var1, 1.0) + [[-22.  -14.5  13. ]] @ var1 + 1.0 + var2',0)
         >>> n.insert('-')
         >>> n.sons[0].sons[0].insert_func('QuadForm')

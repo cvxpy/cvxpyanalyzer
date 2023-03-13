@@ -40,20 +40,9 @@ class Visual:
 
     def __init__(self, obj: Objective):
         """
-            >>> from Visual.visual import *
-    >>> import numpy as np
-    >>> from Visual import binary_tree
-    >>> from tkinter.ttk import Treeview
-    >>> import tkinter as tk
-    >>> from tkinter import font, ttk
-
-    >>> import cvxpy as cp
-    >>> import cvxopt
-    >>> from cvxpy import Minimize, Problem, Variable, quad_form
-    >>> from cvxpy.problems.objective import Objective
-    >>> import operator
-
-    >>> from Visual.binary_tree import Node
+         >>> import cvxpy as cp
+         >>> import cvxopt
+         >>> from cvxpy import Minimize, Problem, Variable, quad_form
          >>> n = 3
          >>> P = cvxopt.matrix([13, 12, -2,12, 17, 6,-2, 6, 12], (n, n))
          >>> q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
@@ -94,29 +83,19 @@ class Visual:
         # split the expression
         self.split_expr(self.root)
 
-    """
-    This function divides the expression recursively,
-    each node of type expression has a single child which is the operator with the highest priority
-    and each node of type operator has children which are the division of the previous expression
-    according to the operator
-    """
+
+
 
     def split_expr(self, exp: Node):
         """
-                   >>> from Visual.visual import *
-    >>> import numpy as np
-    >>> from Visual import binary_tree
-    >>> from tkinter.ttk import Treeview
-    >>> import tkinter as tk
-    >>> from tkinter import font, ttk
-
-    >>> import cvxpy as cp
-    >>> import cvxopt
-    >>> from cvxpy import Minimize, Problem, Variable, quad_form
-    >>> from cvxpy.problems.objective import Objective
-    >>> import operator
-
-    >>> from Visual.binary_tree import Node
+         This function divides the expression recursively,
+         each node of type expression has a single child which is the operator with the highest priority
+         and each node of type operator has children which are the division of the previous expression
+         according to the operator
+         >>> import cvxpy as cp
+         >>> import cvxopt
+         >>> from cvxpy import Minimize, Problem, Variable, quad_form
+         >>> from cvxpy.problems.objective import Objective
          >>> h = cp.Variable(pos=True, name="h")
          >>> w = cp.Variable(pos=True, name="w")
          >>> d = cp.Variable(pos=True, name="d")
