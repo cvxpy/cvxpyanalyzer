@@ -15,9 +15,9 @@ tech_support(problem)
 
 
 ## Visual:
-Purpose of our project is adding visuals to the optimization problems that found in the CVXPY library.<br />
-To see examples you can run the ``examples.py`` <br /> 
-It will run you 3 phrases:
+The Purpose of our project is to visualize the Problem expressions which can be found in CVXPY library. <br /> 
+for examples, you can run ``examples.py`` <br />
+Here you can see the results:
 
 1. Minimize((x2 - y2) ** 2)
 
