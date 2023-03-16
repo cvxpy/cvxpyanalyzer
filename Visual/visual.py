@@ -1,6 +1,8 @@
 from tkinter.ttk import Treeview
 import tkinter as tk
 from tkinter import font, ttk
+import matplotlib.pyplot as plt
+import numpy as np
 
 from cvxpy.problems.objective import Objective
 import operator
@@ -335,8 +337,20 @@ class Visual:
     The two lower functions are still unimplemented
     """
 
+    def plot_function(expr, xmin, xmax, num_points=1000):
+        x_vals = np.linspace(xmin, xmax, num_points)
+        func = lambda x: eval(expr)
+        y_vals = func(x_vals)
+        plt.plot(x_vals, y_vals)
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.title('Graph of Function')
+        plt.show()
+
     def draw_graph(self):
-        self.check_2_dimensions()
+         if self.check_2_dimensions():
+             self.plot_function(self.expr, -10, 10)
+
 
     def draw_constrain(self):
         pass
