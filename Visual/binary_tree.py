@@ -1,16 +1,17 @@
 class Node:
     # Each node has a unique name because an operator can appear more than once
-    uniqName = 0
+    uniqNameForTree = 0
+    uniqNameForData = 0
 
     def __init__(self, node, expr: str, flag=0):
         """
-        >>> Node.uniqName ==0
+        >>> Node.uniqNameForTree ==0
         True
         >>> n = Node(None,'h @ w @ x',0)
-        >>> n.uniqName == 1
+        >>> n.uniqNameForTree == 1
         True
         >>> s = Node(None, 'x',0)
-        >>> n.uniqName == 1
+        >>> n.uniqNameForTree == 1
         False
 
         """
@@ -25,8 +26,14 @@ class Node:
         self.expr = expr
         # flag = 1 ->operator , flag = 0 ->expression
         self.flag = flag
-        self.name = self.uniqName
-        Node.uniqName += 1
+        self.name = self.uniqNameForTree
+        if expr is not None and expr is not False and flag == 0:
+            self.DataName = self.uniqNameForData
+            Node.uniqNameForData += 1
+        else:
+            self.DataName = None
+        Node.uniqNameForTree += 1
+        self.curvature = None
 
     # ---for test---
     def checkin_sons(self, expr: str):
@@ -44,7 +51,6 @@ class Node:
         return None
 
     # ---for test---
-
 
     def insert(self, op: str):
         """
@@ -91,7 +97,6 @@ class Node:
         for i in range(len(ans)):
             node.sons.append(Node(node, ans[i], 0))
 
-
     def insert_func(self, op: str):
         """
           This function inserts a function type operator and
@@ -122,7 +127,7 @@ class Node:
             print("   ", end="")
         if self.flag == 0:
             # Print the child's number
-            print(counter, ".expression:", self.expr)
+            print(counter, ".expression:", self.expr, " name: ", self.DataName)
             s = spaces + 1
             c = 1
             for e in self.sons:
@@ -142,3 +147,20 @@ class Node:
                 e.print_tree(s, c)
                 c += 1
         s += 1
+
+    def level_order_traversal(self):
+        if not self:
+            return []
+        queue = [self]
+        result = []
+        while queue:
+            level_size = len(queue)
+            level_nodes = []
+            for i in range(level_size):
+                node = queue.pop(0)
+                if node.flag == 0 and node.expr is not None and node.expr is not False:
+                    result.append(node.expr)
+                for child in node.sons:
+                    queue.append(child)
+
+        return result
