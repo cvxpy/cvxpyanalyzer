@@ -98,7 +98,7 @@ class Visual:
         # split the expression
         self.split_expr(self.root)
 
-        self.curvature_list = [[str(self.expr), self.ob.expr.curvature_sign, self.ob.expr.sign]]
+        self.curvature_sign_list = [[str(self.expr), self.ob.expr.curvature_sign, self.ob.expr.sign]]
         self.index = 0
         self.create_lists(self.expr)
         self.curvature_sign(self.ob.expr)
@@ -404,26 +404,26 @@ class Visual:
                 if str(exp.expr)[0] == '-':
                     for arg in exp.args[0].args:
                         if not self.check(arg):
-                            self.curvature_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
                             if bool_pow:
-                                self.curvature_list.append([str(param[1]), 'CONSTANT', None])
+                                self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                         else:
                             self.index += 1
-                            self.curvature_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
                             if bool_pow:
-                                self.curvature_list.append([str(param[1]), 'CONSTANT', None])
+                                self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                             self.curvature_sign(arg)
                 else:
                     for arg in exp.args:
                         if not self.check(arg):
-                            self.curvature_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
                             if bool_pow:
-                                self.curvature_list.append([str(param[1]), 'CONSTANT', None])
+                                self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                         else:
                             self.index += 1
-                            self.curvature_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
                             if bool_pow:
-                                self.curvature_list.append([str(param[1]), 'CONSTANT', None])
+                                self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                             self.curvature_sign(arg)
                 self.index += 1
         else:
@@ -449,15 +449,15 @@ class Visual:
                 new_cp1 = cp_expr1 * (-1)
             if str(cp_expr2.expr)[0] == '-':
                 new_cp2 = cp_expr2 * (-1)
-            self.curvature_list.append([str(cp_expr1.expr), new_cp1.curvature, new_cp1.sign])
-            self.curvature_list.append([str(cp_expr2.expr), new_cp2.curvature, new_cp2.sign])
+            self.curvature_sign_list.append([str(cp_expr1.expr), new_cp1.curvature, new_cp1.sign])
+            self.curvature_sign_list.append([str(cp_expr2.expr), new_cp2.curvature, new_cp2.sign])
             self.index += 1
             self.curvature_sign(cp_expr1)
             self.curvature_sign(cp_expr2)
 
     def curvature_sign_node(self, node: Node):
         if node.expr is not None and node.expr is not False and node.flag == 0:
-            for arg in self.curvature_list:
+            for arg in self.curvature_sign_list:
                 node_exp = node.expr
                 if str(arg[0])[0] == '-':
                     node_exp = '-' + node.expr
