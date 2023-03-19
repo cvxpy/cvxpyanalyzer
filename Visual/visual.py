@@ -89,6 +89,7 @@ class Visual:
         self.parameters = []
         self.variables = []
         self.operators = []
+        # List of operators ordered by priority
         self.priority_op = []
         # function is a type of operator
         self.func = []
@@ -97,10 +98,13 @@ class Visual:
         self.root = Node(None, self.expr, 0)
         # split the expression
         self.split_expr(self.root)
-
+        # create a list that contain the expression ,the curvature and the sign of the expression
         self.curvature_sign_list = [[str(self.expr), self.ob.expr.curvature_sign, self.ob.expr.sign]]
+        # the index of priority_op
         self.index = 0
+        # create again all the lists
         self.create_lists(self.expr)
+        # create curvature_sign_list
         self.curvature_sign(self.ob.expr)
         self.index = 0
 
@@ -381,8 +385,14 @@ class Visual:
         else:
             return False
 
+    """
+    This function matches each cvxpy expression its sign and its curvature
+    """
+
     def curvature_sign(self, exp):
+        # Stopping conditions: If we have finished going through the list we will return
         if self.index > len(self.priority_op) - 1:
+            # If the last operator is a function, you should first check its arguments and only then finish
             if self.check2(exp, self.priority_op[self.index - 2]):
                 self.index -= 2
             else:
@@ -391,9 +401,12 @@ class Visual:
         bool_op = False
         bool_pow = False
         param = ' '
+        # If the expression is a variable or a parameter or a matrix there is nothing more to analyze,
+        # if it is a function then we will check its arguments
         if is_float(str(exp)) or is_matrix(str(exp)) or str(exp) in self.variables \
                 or str(exp).replace('-', '') in self.variables or self.check2(exp, curr_op):
             if self.check2(exp, curr_op) and self.check(exp):
+                # If the function is a power, we need to see what the power number is
                 if "power" in str(exp):
                     str_exp = str(exp)
                     index_first = str_exp.index('(')
@@ -401,10 +414,14 @@ class Visual:
                     newExpr = str_exp[index_first + 1: index_sec]
                     param = newExpr.split(',')
                     bool_pow = True
+                # If the sign of the function is negative, then the argument is the function itself,
+                # so we need to check the arguments of the argument
                 if str(exp.expr)[0] == '-':
                     for arg in exp.args[0].args:
+                        # If the argument is a variable or a parameter or a matrix there is nothing more to analyze
                         if not self.check(arg):
                             self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            # if the function is a power
                             if bool_pow:
                                 self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                         else:
@@ -413,10 +430,13 @@ class Visual:
                             if bool_pow:
                                 self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                             self.curvature_sign(arg)
+                # If the sign of the function is not negative
                 else:
                     for arg in exp.args:
+                        # If the argument is a variable or a parameter or a matrix there is nothing more to analyze
                         if not self.check(arg):
                             self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            # if the function is a power
                             if bool_pow:
                                 self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                         else:
@@ -426,15 +446,20 @@ class Visual:
                                 self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                             self.curvature_sign(arg)
                 self.index += 1
+        # If the expression is not a variable or a parameter or a matrix or a function
         else:
             cp_expr1 = exp.args[0]
             bool_first = False
             cp_expr2 = exp.args[0]
+            # if the operator is in priority1 = ['@', '*', '/'] this means that the expression is divided into two
             if curr_op in priority1:
                 cp_expr1 = exp.args[0]
                 cp_expr2 = exp.args[1]
+            # if the operator is in priority2 = ['+', '-'] this means that the expression can be divided
+            # into more than two
             else:
                 for term in exp.args:
+                    # the first argument is cp_expr1 and the rest is cp_expr2
                     if not bool_first:
                         bool_first = True
                         continue
@@ -445,6 +470,7 @@ class Visual:
                         cp_expr2 += term
             new_cp1 = cp_expr1
             new_cp2 = cp_expr2
+            # If the sign of the expression is negative multiply by minus 1 to get its true value
             if str(cp_expr1.expr)[0] == '-':
                 new_cp1 = cp_expr1 * (-1)
             if str(cp_expr2.expr)[0] == '-':
@@ -455,22 +481,31 @@ class Visual:
             self.curvature_sign(cp_expr1)
             self.curvature_sign(cp_expr2)
 
+    """
+    This function uses the list we created in the curvature_sign function 
+    and matches each node its appropriate sign
+    """
+
     def curvature_sign_node(self, node: Node):
+        # If the value of the node is an expression
         if node.expr is not None and node.expr is not False and node.flag == 0:
+            # We will go through the list and look for the value of the current node
             for arg in self.curvature_sign_list:
                 node_exp = node.expr
                 if str(arg[0])[0] == '-':
                     node_exp = '-' + node.expr
                 node_exp = node_exp.replace(' + -', ' - ').replace('\n', ' ').replace(' ', '')
                 arg_exp = str(arg[0]).replace(' + -', ' - ').replace('\n', ' ').replace(' ', '')
+                # If we found the value then we will insert the corresponding values into the node
                 if node_exp.__eq__(arg_exp):
                     node.curvature = arg[1]
+                    # To present things more clearly
                     if str(arg[2]).__eq__("NONNEGATIVE"):
                         arg[2] = "POSITIVE"
                     if str(arg[2]).__eq__("NONPOSITIVE"):
                         arg[3] = "NEGATIVE"
                     node.sign = arg[2]
-                    print("node: ", node.expr, ",", node.sign)
                     break
+        # We will go over the children of the node and do the same
         for child in node.sons:
             self.curvature_sign_node(child)
