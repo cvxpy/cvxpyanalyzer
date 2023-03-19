@@ -1,7 +1,6 @@
 class Node:
     # Each node has a unique name because an operator can appear more than once
     uniqNameForTree = 0
-    uniqNameForData = 0
 
     def __init__(self, node, expr: str, flag=0):
         """
@@ -27,13 +26,9 @@ class Node:
         # flag = 1 ->operator , flag = 0 ->expression
         self.flag = flag
         self.name = self.uniqNameForTree
-        if expr is not None and expr is not False and flag == 0:
-            self.DataName = self.uniqNameForData
-            Node.uniqNameForData += 1
-        else:
-            self.DataName = None
         Node.uniqNameForTree += 1
         self.curvature = None
+        self.sign = None
 
     # ---for test---
     def checkin_sons(self, expr: str):
@@ -127,7 +122,7 @@ class Node:
             print("   ", end="")
         if self.flag == 0:
             # Print the child's number
-            print(counter, ".expression:", self.expr, " name: ", self.DataName)
+            print(counter, ".expression:", self.expr)
             s = spaces + 1
             c = 1
             for e in self.sons:
@@ -148,19 +143,4 @@ class Node:
                 c += 1
         s += 1
 
-    def level_order_traversal(self):
-        if not self:
-            return []
-        queue = [self]
-        result = []
-        while queue:
-            level_size = len(queue)
-            level_nodes = []
-            for i in range(level_size):
-                node = queue.pop(0)
-                if node.flag == 0 and node.expr is not None and node.expr is not False:
-                    result.append(node.expr)
-                for child in node.sons:
-                    queue.append(child)
 
-        return result
