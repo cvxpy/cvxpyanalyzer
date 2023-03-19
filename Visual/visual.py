@@ -22,7 +22,7 @@ and then according to the low priority
 priority1 = ['@', '*', '/']
 # high priority
 priority2 = ['+', '-']
-print("bar1")
+print("bar2")
 # all operators
 op = ['@', '*', '/', '+', '-']
 
