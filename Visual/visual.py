@@ -1,12 +1,18 @@
 from tkinter.ttk import Treeview
 import tkinter as tk
 from tkinter import font, ttk
-import matplotlib.pyplot as plt
+import cvxpy
+import cp as cp
 import numpy as np
-
-from cvxpy.problems.objective import Objective
+from cvxpy import Variable, quad_form
+from cvxpy.problems.objective import Objective, Minimize
 import operator
+
+from matplotlib import pyplot as plt
+
 from Visual.binary_tree import Node
+import sympy
+from sympy import symbols
 
 """
 first we split the expression according to the high priority
@@ -35,6 +41,13 @@ def is_float(s):
         float(s)
         return True
     except ValueError:
+        return False
+
+
+def is_matrix(s):
+    if len(s) > 2 and s[0] == '[' and s[-1] == "]":
+        return True
+    else:
         return False
 
 
@@ -77,16 +90,21 @@ class Visual:
         self.parameters = []
         self.variables = []
         self.operators = []
+        self.priority_op = []
         # function is a type of operator
         self.func = []
         # create the first node, it has no father and brothers,
         # its type is an expression and its value is the expression that the class received
         self.root = Node(None, self.expr, 0)
         # split the expression
+        self.uniqName = 0
+        self.curvature_list = [[str(self.uniqName), str(self.expr), self.ob.expr.curvature]]
+        self.uniqName += 1
+        self.index = 0
         self.split_expr(self.root)
-
-
-
+        self.create_lists(self.expr)
+        self.curvature(self.ob.expr)
+        self.index = 0
 
     def split_expr(self, exp: Node):
         """
@@ -173,6 +191,7 @@ class Visual:
         for o in self.operators:
             if o in priority2:
                 # priority2 is the highest priority so we can stop here
+                self.priority_op.append(o)
                 return o
             if o in priority1:
                 # now we can know that the operator with the highest priority is not a function
@@ -180,6 +199,7 @@ class Visual:
                 ans = o
             elif pr == 0:
                 ans = o
+        self.priority_op.append(ans)
         return ans
 
     """
@@ -196,11 +216,15 @@ class Visual:
         isMatrix = False
         func_string = ""
         matrix_string = ""
+        counter = 1
         # we will go through all the characters in the string
         for s in exp.split():
             # --------variables---------
             if "var" in s:
-                self.variables.append(s)
+                index = s.index("var")
+                new_var = "var" + s[index + 3]
+                if new_var not in self.variables:
+                    self.variables.append(new_var)
             # --------variables---------
 
             # --------function---------
@@ -337,20 +361,119 @@ class Visual:
     The two lower functions are still unimplemented
     """
 
-    def plot_function(expr, xmin, xmax, num_points=1000):
-        x_vals = np.linspace(xmin, xmax, num_points)
-        func = lambda x: eval(expr)
-        y_vals = func(x_vals)
-        plt.plot(x_vals, y_vals)
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title('Graph of Function')
-        plt.show()
-
     def draw_graph(self):
-         if self.check_2_dimensions():
-             self.plot_function(self.expr, -10, 10)
-
+        self.check_2_dimensions()
 
     def draw_constrain(self):
         pass
+
+    def check(self, exp):
+        if not is_float(str(exp)) and not is_matrix(str(exp)) and not str(exp) in self.variables \
+                and not str(exp).replace('-', '') in self.variables:
+            return True
+        return False
+
+    def check2(self, exp, curr_op):
+        if str(exp)[0] == '-':
+            curr_op = '-' + curr_op
+        new_exp = str(exp).replace(' + -', ' - ').replace('\n', ' ').replace(' ', '')
+        new_op = str(curr_op).replace(' + -', ' - ').replace('\n', ' ').replace(' ', '')
+        if new_exp.__eq__(new_op) or str(exp).replace(' + -', ' - ') in self.func:
+            return True
+        else:
+            return False
+
+    def curvature(self, exp):
+        if self.index > len(self.priority_op) - 1:
+            if self.check2(exp, self.priority_op[self.index - 2]):
+                self.index -= 2
+            else:
+                return
+        curr_op = self.priority_op[self.index]
+        bool_op = False
+        bool_pow = False
+        param = ' '
+        if is_float(str(exp)) or is_matrix(str(exp)) or str(exp) in self.variables \
+                or str(exp).replace('-', '') in self.variables or self.check2(exp, curr_op):
+            if self.check2(exp, curr_op) and self.check(exp):
+                if "power" in str(exp):
+                    str_exp = str(exp)
+                    index_first = str_exp.index('(')
+                    index_sec = str_exp.index(')')
+                    newExpr = str_exp[index_first + 1: index_sec]
+                    param = newExpr.split(',')
+                    bool_pow = True
+                if str(exp.expr)[0] == '-':
+                    for arg in exp.args[0].args:
+                        if not self.check(arg):
+                            self.curvature_list.append([str(self.uniqName), str(arg), arg.curvature])
+                            self.uniqName += 1
+                            if bool_pow:
+                                self.curvature_list.append([str(self.uniqName), str(param[1]), 'CONSTANT'])
+                                self.uniqName += 1
+                        else:
+                            self.index += 1
+                            self.curvature_list.append([str(self.uniqName), str(arg), arg.curvature])
+                            self.uniqName += 1
+                            if bool_pow:
+                                self.curvature_list.append([str(self.uniqName), str(param[1]), 'CONSTANT'])
+                                self.uniqName += 1
+                            self.curvature(arg)
+                else:
+                    for arg in exp.args:
+                        if not self.check(arg):
+                            self.curvature_list.append([str(self.uniqName), str(arg), arg.curvature])
+                            self.uniqName += 1
+                            if bool_pow:
+                                self.curvature_list.append([str(self.uniqName), str(param[1]), 'CONSTANT'])
+                                self.uniqName += 1
+                        else:
+                            self.index += 1
+                            self.curvature_list.append([str(self.uniqName), str(arg), arg.curvature])
+                            self.uniqName += 1
+                            if bool_pow:
+                                self.curvature_list.append([str(self.uniqName), str(param[1]), 'CONSTANT'])
+                                self.uniqName += 1
+                            self.curvature(arg)
+                self.index += 1
+        else:
+            cp_expr1 = exp.args[0]
+            bool_first = False
+            cp_expr2 = exp.args[0]
+            if curr_op in priority1:
+                cp_expr1 = exp.args[0]
+                cp_expr2 = exp.args[1]
+            else:
+                for term in exp.args:
+                    if not bool_first:
+                        bool_first = True
+                        continue
+                    elif not bool_op:
+                        bool_op = True
+                        cp_expr2 = term
+                    elif bool_op:
+                        cp_expr2 += term
+            new_cp1 = cp_expr1
+            new_cp2 = cp_expr2
+            if str(cp_expr1.expr)[0] == '-':
+                new_cp1 = cp_expr1 * (-1)
+            if str(cp_expr2.expr)[0] == '-':
+                new_cp2 = cp_expr2 * (-1)
+            self.curvature_list.append([str(self.uniqName), str(cp_expr1.expr), new_cp1.curvature])
+            self.uniqName += 1
+            self.curvature_list.append([str(self.uniqName), str(cp_expr2.expr), new_cp2.curvature])
+            self.uniqName += 1
+            self.index += 1
+            self.curvature(cp_expr1)
+            self.curvature(cp_expr2)
+
+    def curvature_node(self, node: Node):
+        if node.expr is not None and node.expr is not False and node.flag == 0:
+            for arg in self.curvature_list:
+                node_exp = node.expr.replace(' + -', ' - ').replace('\n', ' ').replace(' ', '')
+                arg_exp = str(arg[1]).replace(' + -', ' - ').replace('\n', ' ').replace(' ', '')
+                if node_exp.__eq__(arg_exp):
+                    print("node: ", node.expr)
+                    print("list: ", arg[1])
+        for child in node.sons:
+            self.curvature_node(child)
