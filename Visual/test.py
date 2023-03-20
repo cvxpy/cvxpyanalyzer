@@ -109,6 +109,14 @@
     True
     >>> n.checkin_sons('h @ w')
     True
+
+    # test for check_func
+    >>> x = Variable()
+    >>> exp = -quad_form(x, P)
+    >>> op = "quad_form(x, P)"
+    >>>v.check_func(exp,op)
+    True
+
 """
 if __name__ == '__main__':
     import doctest

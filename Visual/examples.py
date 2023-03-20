@@ -22,6 +22,10 @@ if __name__ == '__main__':
     objective1 = Minimize((x2 - y2) ** 2)
     objective2 = Maximize(3 * cp.sum(x2 - y2) + (x2 - y2) ** 2 + quad_form(z1, P))
 
+    obj = Minimize(0.5 * quad_form(x1, P))
+    v = Visual(obj)
+    print(v.curvature_sign_list)
+
     v = Visual(objective)
     v.show()
     print("---objective---")

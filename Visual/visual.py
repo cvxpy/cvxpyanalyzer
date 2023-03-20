@@ -99,13 +99,14 @@ class Visual:
         # split the expression
         self.split_expr(self.root)
         # create a list that contain the expression ,the curvature and the sign of the expression
-        self.curvature_sign_list = [[str(self.expr), self.ob.expr.curvature_sign, self.ob.expr.sign]]
+        self.curvature_sign_list = [[str(self.expr), self.ob.expr.curvature, self.ob.expr.sign]]
         # the index of priority_op
         self.index = 0
         # create again all the lists
         self.create_lists(self.expr)
         # create curvature_sign_list
         self.curvature_sign(self.ob.expr)
+        self.curvature_sign_node(self.root)
         self.index = 0
 
     def split_expr(self, exp: Node):
@@ -375,7 +376,7 @@ class Visual:
             return True
         return False
 
-    def check2(self, exp, curr_op):
+    def check_func(self, exp, curr_op):
         if str(exp)[0] == '-':
             curr_op = '-' + curr_op
         new_exp = str(exp).replace(' + -', ' - ').replace('\n', ' ').replace(' ', '')
@@ -386,14 +387,45 @@ class Visual:
             return False
 
     """
-    This function matches each cvxpy expression its sign and its curvature
+    This function matches each cvxpy expression its sign and its curvature    
     """
 
     def curvature_sign(self, exp):
+        """
+         >>> import cvxpy as cp
+         >>> import cvxopt
+         >>> from cvxpy import Minimize, Problem, Variable, quad_form
+         >>> from cvxpy.problems.objective import Objective
+         >>> n=3
+         >>> x = Variable(n)
+         >>> y = Variable()
+         >>> z = Variable()
+         >>> P = cvxopt.matrix([13, 12, -2,12, 17, 6,-2, 6, 12], (n, n))
+         >>> exp = "-quad_form(x, P)"
+         >>> op = "quad_form(x, P)"
+         >>> objective = Minimize(0.5 * quad_form(x, P))
+         >>> v = Visual(objective)
+         >>> v.check_func(exp,op)
+         True
+         >>> exp = "power(x + - y, 2.0)"
+         >>> op = "power(x - y,2.0)"
+         >>> v.check_func(exp, op)
+         True
+         >>> exp = "power(y + - x, 2.0)"
+         >>> op = "power(x - y,2.0)"
+         >>> v.check_func(exp, op)
+         False
+         >>> ans = [['CONVEX', 'POSITIVE'],['CONSTANT', 'POSITIVE'],\
+         ['CONVEX', 'POSITIVE'],['AFFINE', 'UNKNOWN'] ,['CONSTANT', 'UNKNOWN']]
+         >>> ans[0][0] == v.curvature_sign_list[0][1]
+         True
+         >>> ans[0][1] == v.curvature_sign_list[0][2]
+         True
+         """
         # Stopping conditions: If we have finished going through the list we will return
         if self.index > len(self.priority_op) - 1:
             # If the last operator is a function, you should first check its arguments and only then finish
-            if self.check2(exp, self.priority_op[self.index - 2]):
+            if self.check_func(exp, self.priority_op[self.index - 2]):
                 self.index -= 2
             else:
                 return
@@ -404,8 +436,8 @@ class Visual:
         # If the expression is a variable or a parameter or a matrix there is nothing more to analyze,
         # if it is a function then we will check its arguments
         if is_float(str(exp)) or is_matrix(str(exp)) or str(exp) in self.variables \
-                or str(exp).replace('-', '') in self.variables or self.check2(exp, curr_op):
-            if self.check2(exp, curr_op) and self.check(exp):
+                or str(exp).replace('-', '') in self.variables or self.check_func(exp, curr_op):
+            if self.check_func(exp, curr_op) and self.check(exp):
                 # If the function is a power, we need to see what the power number is
                 if "power" in str(exp):
                     str_exp = str(exp)
@@ -420,13 +452,13 @@ class Visual:
                     for arg in exp.args[0].args:
                         # If the argument is a variable or a parameter or a matrix there is nothing more to analyze
                         if not self.check(arg):
-                            self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
                             # if the function is a power
                             if bool_pow:
                                 self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                         else:
                             self.index += 1
-                            self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
                             if bool_pow:
                                 self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                             self.curvature_sign(arg)
@@ -435,13 +467,13 @@ class Visual:
                     for arg in exp.args:
                         # If the argument is a variable or a parameter or a matrix there is nothing more to analyze
                         if not self.check(arg):
-                            self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
                             # if the function is a power
                             if bool_pow:
                                 self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                         else:
                             self.index += 1
-                            self.curvature_sign_list.append([str(arg), arg.curvature_sign, arg.sign])
+                            self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
                             if bool_pow:
                                 self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
                             self.curvature_sign(arg)
@@ -487,6 +519,29 @@ class Visual:
     """
 
     def curvature_sign_node(self, node: Node):
+        """
+             >>> import cvxpy as cp
+             >>> import cvxopt
+             >>> from cvxpy import Minimize, Problem, Variable, quad_form
+             >>> from cvxpy.problems.objective import Objective
+             >>> n=3
+             >>> x = Variable(n)
+             >>> P = cvxopt.matrix([13, 12, -2,12, 17, 6,-2, 6, 12], (n, n))
+             >>> objective = Minimize(0.5 * quad_form(x, P))
+             >>> v = Visual(objective)
+             >>> v.root.curvature == 'CONVEX'
+             True
+             >>> v.root.sign == 'POSITIVE'
+             True
+             >>> v.root.sons[0].sons[0].curvature == 'CONSTANT'
+             True
+             >>> v.root.sons[0].sons[0].sign == 'POSITIVE'
+             True
+             >>> v.root.sons[0].sons[1].curvature == 'CONVEX'
+             True
+             >>> v.root.sons[0].sons[1].sign == 'POSITIVE'
+             True
+             """
         # If the value of the node is an expression
         if node.expr is not None and node.expr is not False and node.flag == 0:
             # We will go through the list and look for the value of the current node
