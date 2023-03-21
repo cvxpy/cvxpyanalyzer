@@ -1,0 +1,15 @@
+digraph {
+	"power(var3  - var4, 2.0)" [label="power(var3  - var4, 2.0)"]
+	power [label=power]
+	"power(var3  - var4, 2.0)" -> power [label=bar]
+	"var3 - var4" [label="var3 - var4"]
+	power -> "var3 - var4"
+	"-" [label="-"]
+	"var3 - var4" -> "-"
+	"var3 " [label="var3 "]
+	"-" -> "var3 "
+	" var4" [label=" var4"]
+	"-" -> " var4"
+	" 2.0" [label=" 2.0"]
+	power -> " 2.0"
+}

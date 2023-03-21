@@ -18,8 +18,8 @@ if __name__ == '__main__':
     x2 = Variable()
     y2 = Variable()
     z1 = Variable(n)
-    objective = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
-    objective1 = Minimize((x2 - y2) ** 2)
+    objective = Minimize((x2 - y2) ** 2)
+    objective1 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
     objective2 = Maximize(3 * cp.sum(x2 - y2) + (x2 - y2) ** 2 + quad_form(z1, P))
 
     obj = Minimize(0.5 * quad_form(x1, P))
@@ -28,12 +28,14 @@ if __name__ == '__main__':
 
     v = Visual(objective)
     v.show()
+    v.show_digraph()
     print("---objective---")
     v.root.print_tree()
     print("---objective---")
 
     v = Visual(objective1)
     v.show()
+    v.show_digraph()
     print("---objective1---")
     v.root.print_tree()
     print("---objective1---")
