@@ -302,9 +302,6 @@ class Visual:
             dot.edge(expr2, y)
 
             if node.curvature != 'CONSTANT':
-                print("node test: " + str(node.c_curvature))
-                print("node test: " + str(node.curvature))
-
                 z = 'C' + str(node.c_curvature)
                 dot.node(z, node.curvature, color='#40e0d0',shape='box', style='filled', fillcolor='#40e0d0')
                 dot.edge(z, y)
