@@ -1,6 +1,8 @@
 class Node:
     # Each node has a unique name because an operator can appear more than once
     uniqNameForTree = 0
+    count_curvature = 0
+    count_sign = 0
 
     def __init__(self, node, expr: str, flag=0):
         """
@@ -29,6 +31,12 @@ class Node:
         Node.uniqNameForTree += 1
         self.curvature = None
         self.sign = None
+
+        self.c_curvature = self.count_curvature
+        Node.count_curvature += 1
+
+        self.c_sign = self.count_sign
+        Node.count_sign += 1
 
     # ---for test---
     def checkin_sons(self, expr: str):

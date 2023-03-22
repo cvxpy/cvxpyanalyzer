@@ -10,6 +10,7 @@ import operator
 
 from graphviz import Digraph
 from matplotlib import pyplot as plt
+from matplotlib.pyplot import box
 
 from Visual.binary_tree import Node
 import sympy
@@ -297,6 +298,19 @@ class Visual:
             dot.node(y, node.expr)
             dot.edge(expr2, y)
 
+            if node.curvature != 'CONSTANT':
+                print("node test: " + str(node.c_curvature))
+                print("node test: " + str(node.curvature))
+
+                z = 'C' + str(node.c_curvature)
+                dot.node(z, node.curvature, color='green', shape='box')
+                dot.edge(z, y)
+
+            if node.sign is not None and node.sign != 'UNKNOWN':
+                p = 'B' + str(node.c_sign)
+                dot.node(p, node.sign, color='red', shape='box')
+                dot.edge(p, y)
+
             if node.sons:
                 x = node.sons[0].name
                 dot.node(str(x), node.sons[0].expr) # -
@@ -308,12 +322,21 @@ class Visual:
                     c += 1
         # the node is the root
         else:
-            y= str(node.name)
+            y = str(node.name)
             dot.node(y, node.expr)
+
+            z = 'C' + str(node.c_curvature)
+            dot.node(z, node.curvature, color='green', shape='box')
+            dot.edge(z, y)
+
+            p = 'B' + str(node.c_sign)
+            dot.node(p, node.sign, color='red', shape='box')
+            dot.edge(p , y)
+
             if node.sons:
-                x = node.sons[0].name
-                dot.node(str(x), node.sons[0].expr)
-                dot.edge(y, str(x))
+                x = str(node.sons[0].name)
+                dot.node(x, node.sons[0].expr)
+                dot.edge(y, x)
 
                 c = 0
                 for son in node.sons[0].sons:
