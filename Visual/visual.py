@@ -280,6 +280,10 @@ class Visual:
                 self.operators.append(s)
             # --------operators---------
 
+
+    """
+    The purpose of this function is to visually show the created tree using graphiz
+    """
     def show_digraph(self):
         dot = Digraph()
         self.create_digraph(dot, self.root, 0, "")
@@ -289,50 +293,31 @@ class Visual:
         # if the node is not the root
         if node.father:
             # insert the expression of the current node
-            # print("Galllll")
-            # print(node.father.name)
-            # print(count)
-            # print(node.name)
-            # print(node.expr)
             dot.node(node.expr, node.expr)
             dot.edge(expr2, node.expr)
 
             if node.sons:
-                # print("barrrrrrrr")
-                # print(node.sons[0].name)
-                # print(node.sons[0].expr)
-                dot.node(node.sons[0].expr, node.sons[0].expr)
-                # print(node.name)
-                # print(count)
-                dot.edge(node.expr, node.sons[0].expr)
+                x = node.sons[0].name
+                dot.node(str(x), node.sons[0].expr) # -
+                dot.edge(node.expr, str(x))
 
                 c = 0
                 for son in node.sons[0].sons:
-                    self.create_digraph(dot, son, c, node.sons[0].expr)
+                    self.create_digraph(dot, son, c, str(x))
                     c += 1
         # the node is the root
         else:
-            # print("Orrrrrrr")
-            # print("bar1" + "")
-            # print("end")
-            # print("root")
-            print(node.expr)
             dot.node(node.expr, node.expr)
 
             if node.sons:
-                # print("Avivvvvvv")
-                # print("root")
-                # print(0)
-                # print(node.sons[0].name)
-                # print(node.sons[0].expr)
-                dot.node(node.sons[0].expr, node.sons[0].expr)
-                dot.edge(node.expr, node.sons[0].expr, "bar")
+                x = node.sons[0].name
+                dot.node(str(x), node.sons[0].expr)
+                dot.edge(node.expr, str(x))
 
                 c = 0
                 for son in node.sons[0].sons:
-                    self.create_digraph(dot, son, c, node.sons[0].expr)
+                    self.create_digraph(dot, son, c, str(x))
                     c += 1
-
 
     """
     The purpose of this function is to visually show the created tree using tkinter
