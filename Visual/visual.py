@@ -293,13 +293,14 @@ class Visual:
         # if the node is not the root
         if node.father:
             # insert the expression of the current node
-            dot.node(node.expr, node.expr)
-            dot.edge(expr2, node.expr)
+            y = str(node.name)
+            dot.node(y, node.expr)
+            dot.edge(expr2, y)
 
             if node.sons:
                 x = node.sons[0].name
                 dot.node(str(x), node.sons[0].expr) # -
-                dot.edge(node.expr, str(x))
+                dot.edge(y, str(x))
 
                 c = 0
                 for son in node.sons[0].sons:
@@ -307,12 +308,12 @@ class Visual:
                     c += 1
         # the node is the root
         else:
-            dot.node(node.expr, node.expr)
-
+            y= str(node.name)
+            dot.node(y, node.expr)
             if node.sons:
                 x = node.sons[0].name
                 dot.node(str(x), node.sons[0].expr)
-                dot.edge(node.expr, str(x))
+                dot.edge(y, str(x))
 
                 c = 0
                 for son in node.sons[0].sons:
