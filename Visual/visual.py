@@ -9,12 +9,13 @@ from cvxpy.problems.objective import Objective, Minimize
 import operator
 
 from graphviz import Digraph
+from graphviz import Digraph
 from matplotlib import pyplot as plt
 from matplotlib.pyplot import box
 
 from Visual.binary_tree import Node
 import sympy
-from sympy import symbols
+from sympy import symbols, Point
 
 """
 first we split the expression according to the high priority
@@ -291,6 +292,8 @@ class Visual:
         dot.render('tree.gv', view=True)
 
     def create_digraph(self, dot: Digraph, node: Node, count, expr2: str):
+        img = tk.Image(Point(250, 250), "convex.PNG")
+        img1 = tk.Image(Point(250, 250), "concave.PNG")
         # if the node is not the root
         if node.father:
             # insert the expression of the current node
@@ -303,12 +306,12 @@ class Visual:
                 print("node test: " + str(node.curvature))
 
                 z = 'C' + str(node.c_curvature)
-                dot.node(z, node.curvature, color='green', shape='box')
+                dot.node(z, node.curvature, color='#40e0d0',shape='box', style='filled', fillcolor='#40e0d0')
                 dot.edge(z, y)
 
-            if node.sign is not None and node.sign != 'UNKNOWN':
+            if node.sign is not None:
                 p = 'B' + str(node.c_sign)
-                dot.node(p, node.sign, color='red', shape='box')
+                dot.node(p, node.sign, color='#ff000042', shape='box', style='filled', fillcolor='#ff000042')
                 dot.edge(p, y)
 
             if node.sons:
@@ -326,11 +329,11 @@ class Visual:
             dot.node(y, node.expr)
 
             z = 'C' + str(node.c_curvature)
-            dot.node(z, node.curvature, color='green', shape='box')
+            dot.node(z, node.curvature, color='#40e0d0', shape='box', style='filled', fillcolor='#40e0d0' )
             dot.edge(z, y)
 
             p = 'B' + str(node.c_sign)
-            dot.node(p, node.sign, color='red', shape='box')
+            dot.node(p, node.sign, color='#ff000042', shape='box', style='filled', fillcolor='#ff000042')
             dot.edge(p , y)
 
             if node.sons:
