@@ -7,6 +7,7 @@ import numpy as np
 from cvxpy import Variable, quad_form
 from cvxpy.problems.objective import Objective, Minimize
 import operator
+import re
 
 from graphviz import Digraph
 from graphviz import Digraph
@@ -577,6 +578,8 @@ class Visual:
             self.curvature_sign(cp_expr1)
             self.curvature_sign(cp_expr2)
 
+
+
     """
     This function uses the list we created in the curvature_sign function 
     and matches each node its appropriate sign
@@ -628,3 +631,38 @@ class Visual:
         # We will go over the children of the node and do the same
         for child in node.sons:
             self.curvature_sign_node(child)
+    def plot_function(self,expr, xmin, xmax, num_points=1000):
+        func, xmin, xmax = self.string_to_plot(self.expr)
+        x_vals = np.linspace(xmin, xmax, num_points)
+        y_vals = func(x_vals)
+        plt.plot(x_vals, y_vals)
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.title('Graph of Function')
+        plt.show()
+
+    def string_to_plot(self,s):
+        # Extract the variable name and expression from the string
+        # Replace power(var, n) with var^n
+        expr = re.sub(r'power\((\w+),\s*([\d\.]+)\)', r'\1**\2', s)
+
+        # Replace '@' with '*'
+        expr = expr.replace('@', '*')
+
+        expr = expr.replace(self.variables[0], 'x')
+
+        # Replace the variable name in the expression with 'x'
+
+        # Replace '^' with '**'
+
+        # Construct the lambda function and return the input for plot_function
+        func = lambda x: eval(expr)
+        return (func, -10, 10)
+
+    def draw_graph(self):
+        if self.check_2_dimensions():
+            self.plot_function(self.expr,10,10)
+        else:
+            False
+
+
