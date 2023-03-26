@@ -293,8 +293,8 @@ class Visual:
         dot.render('tree.gv', view=True)
 
     def create_digraph(self, dot: Digraph, node: Node, count, expr2: str):
-        img = tk.Image(Point(250, 250), "convex.PNG")
-        img1 = tk.Image(Point(250, 250), "concave.PNG")
+        # img = tk.Image(Point(250, 250), "convex.PNG")
+        # img1 = tk.Image(Point(250, 250), "concave.PNG")
         # if the node is not the root
         if node.father:
             # insert the expression of the current node
