@@ -28,20 +28,9 @@ As you can see for the phrase: `Minimize(-1 * (y2) ** 2 + 2 * y2)` <br />
 with the constraints `[y2 >= 1]` <br />
 
 ```
-    n = 3
-    P = cvxopt.matrix([13, 12, -2,
-                       12, 17, 6,
-                       -2, 6, 12], (n, n))
-    q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
-    r = 1
-    x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
 
-    x1 = Variable(n)
-    y1 = Variable()
-    x2 = Variable()
     y2 = Variable()
-    z1 = Variable(n)
-
+    
     objective = Minimize(-1 * (y2) ** 2 + 2 * y2)
     constraints = [y2 >= 1]
     v = Visual(objective)
@@ -84,19 +73,8 @@ You will get the following graph: <br />
 This function prints the expression in the structure of a tree in the RUN window.
 
 ```
-    n = 3
-    P = cvxopt.matrix([13, 12, -2,
-                       12, 17, 6,
-                       -2, 6, 12], (n, n))
-    q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
-    r = 1
-    x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
-
-    x1 = Variable(n)
-    y1 = Variable()
     x2 = Variable()
     y2 = Variable()
-    z1 = Variable(n)
     
     objective1 = Minimize((x2 - y2) ** 2)
     
