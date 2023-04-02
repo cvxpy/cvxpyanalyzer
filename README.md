@@ -78,8 +78,6 @@ In the ``example.py`` file you can run several expressions on this function.
     z1 = Variable(n)
     
     objective1 = Minimize((x2 - y2) ** 2)
-    objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
-    objective3 = Maximize(3 * cp.sum(x2 - y2) + (x2 - y2) ** 2 + quad_form(z1, P))
 
     # examples for show_digraph:
 
@@ -116,8 +114,6 @@ This function prints the expression in the structure of a tree in the RUN window
     z1 = Variable(n)
     
     objective1 = Minimize((x2 - y2) ** 2)
-    objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
-    objective3 = Maximize(3 * cp.sum(x2 - y2) + (x2 - y2) ** 2 + quad_form(z1, P))
     
     # examples for print_tree:
 
