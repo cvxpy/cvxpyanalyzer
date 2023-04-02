@@ -18,11 +18,11 @@
 # # render the graph to a PNG file
 # dot.render('example_graph', format='png')
 
-import graphviz
-
-dot = graphviz.Digraph(comment='Example Graph')
-dot.node('A', label='', image="image/concave.PNG", width='0.000002', height='0.00002', shape='none',fixedsize="true")
-dot.node('B', label='', image="image/concave.PNG", width='5', height='5', shape='none')
-dot.edge('A', 'B')
-
-dot.render('example_graph', format='png')
+# import graphviz
+#
+# dot = graphviz.Digraph(comment='Example Graph')
+# dot.node('A', label='', image="image/concave.PNG", width='0.000002', height='0.00002', shape='none',fixedsize="true")
+# dot.node('B', label='', image="image/concave.PNG", width='5', height='5', shape='none')
+# dot.edge('A', 'B')
+#
+# dot.render('example_graph', format='png')
