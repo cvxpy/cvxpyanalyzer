@@ -48,7 +48,7 @@ with the constraints `[y2 >= 1]` <br />
     print(v.expr)
     v.draw_graph()
 ```
-by running `v.draw_graph()` you will get the following graph:
+by running `v.draw_graph()` you will get the following graph:<br />
 ![3](https://user-images.githubusercontent.com/93201414/229357160-6517dcca-fcb7-4257-b145-400c084bf853.png)
 
 It displays all the solutions of the equation that we want to see when substituting variable values between -10 to 10.
@@ -92,14 +92,21 @@ In the ``example.py`` file you can run several expressions on this function.
     v3 = Visual(objective3)
     v3.show_digraph()
 ```
-**for the first expression**
-1. Minimize((x2 - y2) ** 2)
+**for the first expression** <br />
+1. Minimize((x2 - y2) ** 2) <br />
 
-<img width="158" alt="two" src="https://user-images.githubusercontent.com/93201414/224012647-01a514f1-dbfc-4aad-97bb-25d76964750f.PNG">
+You will get the following graph: <br />
 
+<img width="300" alt="4" src="https://user-images.githubusercontent.com/93201414/229358362-0c92af7f-3ebc-4dd5-85d1-46b82e1aafcd.PNG">
+<br />
+
+**for the second expression** <br />
 2. Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
 
-<img width="392" alt="One1" src="https://user-images.githubusercontent.com/93201414/224955840-f8e2bebe-2035-4f0d-81d3-1b2b714bef01.png">
+You will get the following graph: <br />
+
+<img width="600" alt="5" src="https://user-images.githubusercontent.com/93201414/229358372-7ea07b2a-b56a-404f-9ec9-4792beddc74d.PNG">
+
 
 3. Maximize(3 * cp.sum(x2 - y2) + (x2 - y2) ** 2 + quad_form(z1, P))
 
