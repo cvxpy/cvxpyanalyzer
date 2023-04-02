@@ -63,24 +63,9 @@ Which `Sing` is of a type of `Positive` , `Negative`, `Unknown` and Which `Curva
 In the ``example.py`` file you can run several expressions on this function.
 
 ```
-    n = 3
-    P = cvxopt.matrix([13, 12, -2,
-                       12, 17, 6,
-                       -2, 6, 12], (n, n))
-    q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
-    r = 1
-    x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
-
-    x1 = Variable(n)
-    y1 = Variable()
     x2 = Variable()
     y2 = Variable()
-    z1 = Variable(n)
-    
     objective1 = Minimize((x2 - y2) ** 2)
-
-    # examples for show_digraph:
-
     v = Visual(objective1)
     v.show_digraph()
 ```
