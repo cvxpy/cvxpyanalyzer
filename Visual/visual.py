@@ -160,7 +160,6 @@ class Visual:
          True
          >>> n.sons[0].sons[0].expr.__contains__('0.5 @ QuadForm(var1, [[13. 12. -2.][12. 17.  6.][-2.  6. 12.]])')
          True
-
         """
         # Finding the highest priority operator in the current expression
         o = self.priority(exp.expr)
@@ -664,5 +663,3 @@ class Visual:
             self.plot_function(self.expr,10,10)
         else:
             False
-
-
