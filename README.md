@@ -107,7 +107,60 @@ You will get the following graph: <br />
 
 <img width="600" alt="5" src="https://user-images.githubusercontent.com/93201414/229358372-7ea07b2a-b56a-404f-9ec9-4792beddc74d.PNG">
 
+**Please note that you can run only one example at a time and not all of them together. If you run all of them together, the output file will show only the graph of the last example that was executed** <br />
 
-3. Maximize(3 * cp.sum(x2 - y2) + (x2 - y2) ** 2 + quad_form(z1, P))
 
-<img width="436" alt="tree1" src="https://user-images.githubusercontent.com/93201414/224955914-73524744-96e6-49a5-9153-11c7d5eb7219.png">
+## v.root.print_tree():
+This function prints the expression in the structure of a tree in the RUN window.
+
+```
+    n = 3
+    P = cvxopt.matrix([13, 12, -2,
+                       12, 17, 6,
+                       -2, 6, 12], (n, n))
+    q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
+    r = 1
+    x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
+
+    x1 = Variable(n)
+    y1 = Variable()
+    x2 = Variable()
+    y2 = Variable()
+    z1 = Variable(n)
+    
+    objective1 = Minimize((x2 - y2) ** 2)
+    objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
+    objective3 = Maximize(3 * cp.sum(x2 - y2) + (x2 - y2) ** 2 + quad_form(z1, P))
+    
+    # examples for print_tree:
+
+    print("---objective 1 ---")
+    v = Visual(objective1)
+    print(v.curvature_sign_list)
+    print("---objective 1 ---")
+
+    v.root.print_tree()
+
+    print("---objective 2 ---")
+    v2 = Visual(objective2)
+    print(v2.curvature_sign_list)
+    print("---objective 2 ---")
+
+    v2.root.print_tree()
+
+    print("---objective 3 ---")
+    v3 = Visual(objective3)
+    print(v3.curvature_sign_list)
+    print("---objective 3 ---")
+
+    v3.root.print_tree()
+```
+For each expression, you can run the following function,<br />
+This will produce a graph that will be displayed in the runtime window.
+
+For example **for the first expression** 
+1. Minimize((x2 - y2) ** 2) <br />
+
+you will get : 
+![image](https://user-images.githubusercontent.com/93201414/229359112-bc30b68a-bcd8-4739-b302-0d96932c2b8f.png)
+
