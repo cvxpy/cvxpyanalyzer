@@ -14,9 +14,15 @@ tech_support(problem)
 ```
 
 
-## Visual:
+# Visual:
 The Purpose of our project is to visualize the Problem expressions which can be found in CVXPY library. <br /> 
-for examples, you can run ``examples.py`` <br />
+During the development process, we have created three different functions that allow to visualize the Problem expressions in a more accessible and clear way for library users. <br />
+As you can see in the file:  ``examples.py`` <br />
+You can see several examples of how to run expressions using the different functions we created.
+
+## v.draw_graph():
+
+
 Here you can see the results:
 
 1. Minimize((x2 - y2) ** 2)
