@@ -85,27 +85,14 @@ In the ``example.py`` file you can run several expressions on this function.
 
     v = Visual(objective1)
     v.show_digraph()
-
-    v2 = Visual(objective2)
-    v2.show_digraph()
-
-    v3 = Visual(objective3)
-    v3.show_digraph()
 ```
-**for the first expression** <br />
-1. Minimize((x2 - y2) ** 2) <br />
+
+Minimize((x2 - y2) ** 2) <br />
 
 You will get the following graph: <br />
 
 <img width="300" alt="4" src="https://user-images.githubusercontent.com/93201414/229358362-0c92af7f-3ebc-4dd5-85d1-46b82e1aafcd.PNG">
 <br />
-
-**for the second expression** <br />
-2. Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
-
-You will get the following graph: <br />
-
-<img width="600" alt="5" src="https://user-images.githubusercontent.com/93201414/229358372-7ea07b2a-b56a-404f-9ec9-4792beddc74d.PNG">
 
 **Please note that you can run only one example at a time and not all of them together. If you run all of them together, the output file will show only the graph of the last example that was executed** <br />
 
@@ -140,20 +127,6 @@ This function prints the expression in the structure of a tree in the RUN window
     print("---objective 1 ---")
 
     v.root.print_tree()
-
-    print("---objective 2 ---")
-    v2 = Visual(objective2)
-    print(v2.curvature_sign_list)
-    print("---objective 2 ---")
-
-    v2.root.print_tree()
-
-    print("---objective 3 ---")
-    v3 = Visual(objective3)
-    print(v3.curvature_sign_list)
-    print("---objective 3 ---")
-
-    v3.root.print_tree()
 ```
 For each expression, you can run the following function,<br />
 This will produce a graph that will be displayed in the runtime window.
