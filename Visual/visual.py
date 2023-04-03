@@ -282,14 +282,14 @@ class Visual:
                 self.operators.append(s)
             # --------operators---------
 
-
     """
     The purpose of this function is to visually show the created tree using graphiz
     """
-    def show_digraph(self):
+
+    def show_digraph(self, file_name):
         dot = Digraph()
         self.create_digraph(dot, self.root, 0, "")
-        dot.render('tree.gv', view=True)
+        dot.render(file_name, view=True)
 
     def create_digraph(self, dot: Digraph, node: Node, count, expr2: str):
         # img = tk.Image(Point(250, 250), "convex.PNG")
@@ -303,7 +303,7 @@ class Visual:
 
             if node.curvature != 'CONSTANT':
                 z = 'C' + str(node.c_curvature)
-                dot.node(z, node.curvature, color='#40e0d0',shape='box', style='filled', fillcolor='#40e0d0')
+                dot.node(z, node.curvature, color='#40e0d0', shape='box', style='filled', fillcolor='#40e0d0')
                 dot.edge(z, y)
 
             if node.sign is not None:
@@ -313,7 +313,7 @@ class Visual:
 
             if node.sons:
                 x = node.sons[0].name
-                dot.node(str(x), node.sons[0].expr) # -
+                dot.node(str(x), node.sons[0].expr)  # -
                 dot.edge(y, str(x))
 
                 c = 0
@@ -326,12 +326,12 @@ class Visual:
             dot.node(y, node.expr)
 
             z = 'C' + str(node.c_curvature)
-            dot.node(z, node.curvature, color='#40e0d0', shape='box', style='filled', fillcolor='#40e0d0' )
+            dot.node(z, node.curvature, color='#40e0d0', shape='box', style='filled', fillcolor='#40e0d0')
             dot.edge(z, y)
 
             p = 'B' + str(node.c_sign)
             dot.node(p, node.sign, color='#ff000042', shape='box', style='filled', fillcolor='#ff000042')
-            dot.edge(p , y)
+            dot.edge(p, y)
 
             if node.sons:
                 x = str(node.sons[0].name)
@@ -577,8 +577,6 @@ class Visual:
             self.curvature_sign(cp_expr1)
             self.curvature_sign(cp_expr2)
 
-
-
     """
     This function uses the list we created in the curvature_sign function 
     and matches each node its appropriate sign
@@ -630,7 +628,8 @@ class Visual:
         # We will go over the children of the node and do the same
         for child in node.sons:
             self.curvature_sign_node(child)
-    def plot_function(self,expr, xmin, xmax, num_points=1000):
+
+    def plot_function(self, expr, xmin, xmax, num_points=1000):
         func, xmin, xmax = self.string_to_plot(self.expr)
         x_vals = np.linspace(xmin, xmax, num_points)
         y_vals = func(x_vals)
@@ -640,7 +639,7 @@ class Visual:
         plt.title('Graph of Function')
         plt.show()
 
-    def string_to_plot(self,s):
+    def string_to_plot(self, s):
         # Extract the variable name and expression from the string
         # Replace power(var, n) with var^n
         expr = re.sub(r'power\((\w+),\s*([\d\.]+)\)', r'\1**\2', s)
@@ -660,6 +659,6 @@ class Visual:
 
     def draw_graph(self):
         if self.check_2_dimensions():
-            self.plot_function(self.expr,10,10)
+            self.plot_function(self.expr, 10, 10)
         else:
             False
