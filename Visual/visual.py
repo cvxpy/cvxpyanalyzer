@@ -8,15 +8,9 @@ from cvxpy import Variable, quad_form
 from cvxpy.problems.objective import Objective, Minimize
 import operator
 import re
-
-from graphviz import Digraph
 from graphviz import Digraph
 from matplotlib import pyplot as plt
-from matplotlib.pyplot import box
-
 from Visual.binary_tree import Node
-import sympy
-from sympy import symbols, Point
 
 """
 first we split the expression according to the high priority
@@ -180,11 +174,10 @@ class Visual:
         for p in exp.sons[0].sons:
             self.split_expr(p)
 
-    """
-    This function takes the expression and looks for the operator with the highest priority
-    """
-
     def priority(self, exp):
+        """
+        This function takes the expression and looks for the operator with the highest priority
+        """
         # pr = 0 if the highest priority is a function
         pr = 0
         ans = ''
@@ -208,11 +201,10 @@ class Visual:
         self.priority_op.append(ans)
         return ans
 
-    """
-    This function creating the four lists based on the expression she get
-    """
-
     def create_lists(self, exp):
+        """
+        This function creating the four lists based on the expression she get
+        """
         # Reset the lists
         self.parameters = []
         self.variables = []
@@ -282,18 +274,15 @@ class Visual:
                 self.operators.append(s)
             # --------operators---------
 
-    """
-    The purpose of this function is to visually show the created tree using graphiz
-    """
-
-    def show_digraph(self, file_name):
+    def show(self, file_name):
+        """
+        The purpose of this function is to visually show the created tree using graphiz
+        """
         dot = Digraph()
         self.create_digraph(dot, self.root, 0, "")
         dot.render(file_name, view=True)
 
     def create_digraph(self, dot: Digraph, node: Node, count, expr2: str):
-        # img = tk.Image(Point(250, 250), "convex.PNG")
-        # img1 = tk.Image(Point(250, 250), "concave.PNG")
         # if the node is not the root
         if node.father:
             # insert the expression of the current node
@@ -343,11 +332,10 @@ class Visual:
                     self.create_digraph(dot, son, c, str(x))
                     c += 1
 
-    """
-    The purpose of this function is to visually show the created tree using tkinter
-    """
-
-    def show(self):
+    def show_tree(self):
+        """
+        The purpose of this function is to visually show the created tree using tkinter
+        """
         window = tk.Tk()
         window.title("My GUI")
         # Create a Treeview widget
@@ -366,11 +354,10 @@ class Visual:
         # Run the event loop
         window.mainloop()
 
-    """
-    This function recursively creates the tree using Treeview
-    """
-
     def create_tree(self, tree: Treeview, node: Node, count):
+        """
+        This function recursively creates the tree using Treeview
+        """
         # if the node is not the root
         if node.father:
             # insert the expression of the current node
@@ -401,11 +388,10 @@ class Visual:
                     self.create_tree(tree, son, c)
                     c += 1
 
-    """
-    This function checks whether it is possible to draw the expression in a graph with two axes
-    """
-
     def check_2_dimensions(self):
+        """
+        This function checks whether it is possible to draw the expression in a graph with two axes
+        """
         self.create_lists(self.expr)
         # We will check that the only function in the expression is power
         if self.func:
@@ -424,17 +410,10 @@ class Visual:
                 return False
         return True
 
-    """
-    The two lower functions are still unimplemented
-    """
-
-    def draw_graph(self):
-        self.check_2_dimensions()
-
-    def draw_constrain(self):
-        pass
-
     def check(self, exp):
+        """
+        The two lower functions are still unimplemented
+        """
         if not is_float(str(exp)) and not is_matrix(str(exp)) and not str(exp) in self.variables \
                 and not str(exp).replace('-', '') in self.variables:
             return True
@@ -450,11 +429,10 @@ class Visual:
         else:
             return False
 
-    """
-    This function matches each cvxpy expression its sign and its curvature    
-    """
-
     def curvature_sign(self, exp):
+        """
+        This function matches each cvxpy expression its sign and its curvature
+        """
         """
          >>> import cvxpy as cp
          >>> import cvxopt
@@ -577,12 +555,11 @@ class Visual:
             self.curvature_sign(cp_expr1)
             self.curvature_sign(cp_expr2)
 
-    """
-    This function uses the list we created in the curvature_sign function 
-    and matches each node its appropriate sign
-    """
-
     def curvature_sign_node(self, node: Node):
+        """
+        This function uses the list we created in the curvature_sign function
+        and matches each node its appropriate sign
+        """
         """
              >>> import cvxpy as cp
              >>> import cvxopt
@@ -611,7 +588,7 @@ class Visual:
             # We will go through the list and look for the value of the current node
             for arg in self.curvature_sign_list:
                 node_exp = node.expr
-                if str(arg[0])[0] == '-':
+                if str(arg[0])[0] == '-' and node_exp[0] != '-':
                     node_exp = '-' + node.expr
                 node_exp = node_exp.replace(' + -', ' - ').replace('\n', ' ').replace(' ', '')
                 arg_exp = str(arg[0]).replace(' + -', ' - ').replace('\n', ' ').replace(' ', '')
