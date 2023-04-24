@@ -44,7 +44,7 @@ It displays all the solutions of the equation that we want to see when substitut
 
 ## v.show_digraph():
 We created this function to enable viewing the expression in a graph format with nodes, which will allow for visual and clear representation. <br />
-For each expression you choose, the function's output is a PDF file named "tree.gv", which is very similar to the DCP Analyzer. https://dcp.stanford.edu/analyzer <br />
+For each expression you choose, the function's output is a PDF file named "file_name.pdf", which is very similar to the DCP Analyzer. https://dcp.stanford.edu/analyzer <br />
 
 Here too it was important for us to present for all: Parameters , Variables <br />
 Which `Sing` is of a type of `Positive` , `Negative`, `Unknown` and Which `Curvature` is of a type of `Constant`,`Affine`,`Convex`,`Concave`,`Unknown`. <br />
@@ -56,7 +56,7 @@ In the ``example.py`` file you can run several expressions on this function.
     y2 = Variable()
     objective1 = Minimize((x2 - y2) ** 2)
     v = Visual(objective1)
-    v.show_digraph()
+    v.show_digraph("file_name")
 ```
 
 Minimize((x2 - y2) ** 2) <br />
