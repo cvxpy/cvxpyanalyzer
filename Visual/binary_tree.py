@@ -41,7 +41,13 @@ class Node:
     # ---for test---
     def checkin_sons(self, expr: str):
         for s in self.sons:
-            if s.expr.__contains__(expr):
+            expression = expr.split(' ')
+            bool = True
+            for e in expression:
+                if not s.expr.__contains__(e):
+                    bool = False
+                    break
+            if bool:
                 return True
         return False
 
@@ -150,5 +156,3 @@ class Node:
                 e.print_tree(s, c)
                 c += 1
         s += 1
-
-

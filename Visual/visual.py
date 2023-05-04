@@ -606,9 +606,9 @@ class Visual:
         for child in node.sons:
             self.curvature_sign_node(child)
 
-    def plot_function(self, expr, xmin, xmax, num_points=1000):
+    def plot_function(self, expr, xminr, xmaxr, num_points=1000):
         func, xmin, xmax = self.string_to_plot(self.expr)
-        x_vals = np.linspace(xmin, xmax, num_points)
+        x_vals = np.linspace(xminr, xmaxr, num_points)
         y_vals = func(x_vals)
         plt.plot(x_vals, y_vals)
         plt.xlabel('x')
@@ -634,8 +634,8 @@ class Visual:
         func = lambda x: eval(expr)
         return (func, -10, 10)
 
-    def draw_graph(self):
+    def draw_graph(self, xmin=-10, xmax=10):
         if self.check_2_dimensions():
-            self.plot_function(self.expr, 10, 10)
+            self.plot_function(self.expr, xmin, xmax)
         else:
             False

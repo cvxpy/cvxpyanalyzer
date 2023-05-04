@@ -5,13 +5,11 @@
     >>> from tkinter.ttk import Treeview
     >>> import tkinter as tk
     >>> from tkinter import font, ttk
-
     >>> import cvxpy as cp
     >>> import cvxopt
     >>> from cvxpy import Minimize, Problem, Variable, quad_form
     >>> from cvxpy.problems.objective import Objective
     >>> import operator
-
     >>> from Visual.binary_tree import Node
     >>> n = 3
     >>> P = cvxopt.matrix([13, 12, -2,12, 17, 6,-2, 6, 12], (n, n))
@@ -24,14 +22,12 @@
     >>> objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r + y)
     >>> v = Visual(objective)
     >>> stri=str(objective.expr).replace("+ -", " - ")
-    >>> print(str(objective.expr).replace("+ -", " - "))
-    True
     >>> stri==v.root.expr
     True
     >>> v.root.checkin_sons('-')
     True
     >>> n=v.root.node_son('-')
-    >>> n.checkin_sons('0.5 @ QuadForm(var1, [[13. 12. -2.][12. 17.  6.][-2.  6. 12.]])')
+    >>> n.checkin_sons('0.5 @ QuadForm(var1, [[13. 12. -2.] [12. 17.  6.] [-2.  6. 12.]])')
     True
     >>> A_wall = 100
     >>> A_flr = 10
@@ -39,11 +35,9 @@
     >>> beta = 2
     >>> gamma = 0.5
     >>> delta = 2
-
     >>> h = cp.Variable(pos=True, name="h")
     >>> w = cp.Variable(pos=True, name="w")
     >>> d = cp.Variable(pos=True, name="d")
-
     >>> volume = h * w * d
     >>> wall_area = 2 * (h * w + h * d)
     >>> flr_area = w * d
@@ -78,7 +72,6 @@
     True
     >>> n.checkin_sons('x')
     False
-
     >>> objective=cp.Maximize(h)
     >>> v = Visual(objective)
     >>> v.root.checkin_sons('+')
@@ -95,7 +88,7 @@
     >>> n=v.root.node_son('QuadForm')
     >>> n.checkin_sons('var1')
     True
-    >>> n.checkin_sons(str(P))
+    >>> n.checkin_sons('[[13. 12. -2.] [12. 17.  6.] [-2.  6. 12.]]')
     True
     >>> volume = h * w + d
     >>> objective=cp.Maximize(volume)
@@ -109,14 +102,11 @@
     True
     >>> n.checkin_sons('h @ w')
     True
-
-    # test for check_func
     >>> x = Variable()
     >>> exp = -quad_form(x, P)
     >>> op = "quad_form(x, P)"
-    >>>v.check_func(exp,op)
+    >>> v.check_func(exp,op)
     True
-
 """
 if __name__ == '__main__':
     import doctest
