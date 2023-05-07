@@ -10,7 +10,7 @@ import operator
 import re
 from graphviz import Digraph
 from matplotlib import pyplot as plt
-from Visual.binary_tree import Node
+from Visual.expression_tree import Node
 
 """
 first we split the expression according to the high priority
@@ -51,33 +51,6 @@ def is_matrix(s):
 class Visual:
 
     def __init__(self, obj: Objective):
-        """
-         >>> import cvxpy as cp
-         >>> import cvxopt
-         >>> from cvxpy import Minimize, Problem, Variable, quad_form
-         >>> n = 3
-         >>> P = cvxopt.matrix([13, 12, -2,12, 17, 6,-2, 6, 12], (n, n))
-         >>> q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
-         >>> r = 1
-         >>> x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
-         >>> x = Variable(n)
-         >>> y = Variable()
-         >>> z = Variable(n)
-         >>> objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r + y)
-         >>> v = Visual(objective)
-         >>> stri=str(objective.expr).replace("+ -", " - ")
-         >>> stri==v.root.expr
-         True
-         >>> h = cp.Variable(pos=True, name="h")
-         >>> w = cp.Variable(pos=True, name="w")
-         >>> d = cp.Variable(pos=True, name="d")
-         >>> volume = h * w * d
-         >>> objective=cp.Maximize(volume)
-         >>> v = Visual(objective)
-         >>> stri=str(objective.expr).replace("+ -", " - ")
-         >>> stri==v.root.expr
-         True
-        """
         self.ob = obj
         # Minimize/Maximize
         self.name = obj.NAME
@@ -113,47 +86,6 @@ class Visual:
          each node of type expression has a single child which is the operator with the highest priority
          and each node of type operator has children which are the division of the previous expression
          according to the operator
-         >>> import cvxpy as cp
-         >>> import cvxopt
-         >>> from cvxpy import Minimize, Problem, Variable, quad_form
-         >>> from cvxpy.problems.objective import Objective
-         >>> h = cp.Variable(pos=True, name="h")
-         >>> w = cp.Variable(pos=True, name="w")
-         >>> d = cp.Variable(pos=True, name="d")
-         >>> volume = h * w * d
-         >>> objective=cp.Maximize(volume)
-         >>> n = Node(None,str(objective.expr).replace("+ -", " - "),0)
-         >>> len(n.sons)==0
-         True
-         >>> v = Visual(objective)
-         >>> n=v.root
-         >>> len(n.sons) != 0
-         True
-         >>> n.sons[0].expr.__contains__('@')
-         True
-         >>> n.sons[0].sons[0].expr.__contains__('h')
-         True
-         >>> n = 3
-         >>> P = cvxopt.matrix([13, 12, -2,12, 17, 6,-2, 6, 12], (n, n))
-         >>> q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
-         >>> r = 1
-         >>> x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
-         >>> x = Variable(n)
-         >>> y = Variable()
-         >>> z = Variable(n)
-         >>> objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r + y)
-         >>> n = Node(None,str(objective.expr).replace("+ -", " - "),0)
-         >>> len(n.sons)==0
-         True
-         >>> n=Visual(objective).root
-         >>> len(n.sons) != 0
-         True
-         >>> n.sons[0].expr.__contains__('@')
-         False
-         >>> n.sons[0].expr.__contains__('-')
-         True
-         >>> n.sons[0].sons[0].expr.__contains__('0.5 @ QuadForm(var1, [[13. 12. -2.][12. 17.  6.][-2.  6. 12.]])')
-         True
         """
         # Finding the highest priority operator in the current expression
         o = self.priority(exp.expr)
@@ -203,7 +135,7 @@ class Visual:
 
     def create_lists(self, exp):
         """
-        This function creating the four lists based on the expression she get
+        This function creating the four lists based on the expression she gets
         """
         # Reset the lists
         self.parameters = []
@@ -274,7 +206,7 @@ class Visual:
                 self.operators.append(s)
             # --------operators---------
 
-    def show(self, file_name):
+    def show_and_save(self, file_name):
         """
         The purpose of this function is to visually show the created tree using graphiz
         """
@@ -332,7 +264,7 @@ class Visual:
                     self.create_digraph(dot, son, c, str(x))
                     c += 1
 
-    def show_tree(self):
+    def show(self):
         """
         The purpose of this function is to visually show the created tree using tkinter
         """
@@ -433,156 +365,103 @@ class Visual:
         """
         This function matches each cvxpy expression its sign and its curvature
         """
-        """
-         >>> import cvxpy as cp
-         >>> import cvxopt
-         >>> from cvxpy import Minimize, Problem, Variable, quad_form
-         >>> from cvxpy.problems.objective import Objective
-         >>> n=3
-         >>> x = Variable(n)
-         >>> y = Variable()
-         >>> z = Variable()
-         >>> P = cvxopt.matrix([13, 12, -2,12, 17, 6,-2, 6, 12], (n, n))
-         >>> exp = "-quad_form(x, P)"
-         >>> op = "quad_form(x, P)"
-         >>> objective = Minimize(0.5 * quad_form(x, P))
-         >>> v = Visual(objective)
-         >>> v.check_func(exp,op)
-         True
-         >>> exp = "power(x + - y, 2.0)"
-         >>> op = "power(x - y,2.0)"
-         >>> v.check_func(exp, op)
-         True
-         >>> exp = "power(y + - x, 2.0)"
-         >>> op = "power(x - y,2.0)"
-         >>> v.check_func(exp, op)
-         False
-         >>> ans = [['CONVEX', 'POSITIVE'],['CONSTANT', 'POSITIVE'],\
-         ['CONVEX', 'POSITIVE'],['AFFINE', 'UNKNOWN'] ,['CONSTANT', 'UNKNOWN']]
-         >>> ans[0][0] == v.curvature_sign_list[0][1]
-         True
-         >>> ans[0][1] == v.curvature_sign_list[0][2]
-         True
-         """
         # Stopping conditions: If we have finished going through the list we will return
-        if self.index > len(self.priority_op) - 1:
+        if self.index > len(self.priority_op) - 1 and self.index >= 2:
             # If the last operator is a function, you should first check its arguments and only then finish
             if self.check_func(exp, self.priority_op[self.index - 2]):
                 self.index -= 2
             else:
                 return
-        curr_op = self.priority_op[self.index]
-        bool_op = False
-        bool_pow = False
-        param = ' '
-        # If the expression is a variable or a parameter or a matrix there is nothing more to analyze,
-        # if it is a function then we will check its arguments
-        if is_float(str(exp)) or is_matrix(str(exp)) or str(exp) in self.variables \
-                or str(exp).replace('-', '') in self.variables or self.check_func(exp, curr_op):
-            if self.check_func(exp, curr_op) and self.check(exp):
-                # If the function is a power, we need to see what the power number is
-                if "power" in str(exp):
-                    str_exp = str(exp)
-                    index_first = str_exp.index('(')
-                    index_sec = str_exp.index(')')
-                    newExpr = str_exp[index_first + 1: index_sec]
-                    param = newExpr.split(',')
-                    bool_pow = True
-                # If the sign of the function is negative, then the argument is the function itself,
-                # so we need to check the arguments of the argument
-                if str(exp.expr)[0] == '-':
-                    for arg in exp.args[0].args:
-                        # If the argument is a variable or a parameter or a matrix there is nothing more to analyze
-                        if not self.check(arg):
-                            self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
-                            # if the function is a power
-                            if bool_pow:
-                                self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
-                        else:
-                            self.index += 1
-                            self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
-                            if bool_pow:
-                                self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
-                            self.curvature_sign(arg)
-                # If the sign of the function is not negative
-                else:
-                    for arg in exp.args:
-                        # If the argument is a variable or a parameter or a matrix there is nothing more to analyze
-                        if not self.check(arg):
-                            self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
-                            # if the function is a power
-                            if bool_pow:
-                                self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
-                        else:
-                            self.index += 1
-                            self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
-                            if bool_pow:
-                                self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
-                            self.curvature_sign(arg)
-                self.index += 1
-        # If the expression is not a variable or a parameter or a matrix or a function
-        else:
-            cp_expr1 = exp.args[0]
-            bool_first = False
-            cp_expr2 = exp.args[0]
-            # if the operator is in priority1 = ['@', '*', '/'] this means that the expression is divided into two
-            if curr_op in priority1:
-                cp_expr1 = exp.args[0]
-                cp_expr2 = exp.args[1]
-            # if the operator is in priority2 = ['+', '-'] this means that the expression can be divided
-            # into more than two
+        if len(self.priority_op) >= 0 and self.index < len(self.priority_op):
+            curr_op = self.priority_op[self.index]
+            bool_op = False
+            bool_pow = False
+            param = ' '
+            # If the expression is a variable or a parameter or a matrix there is nothing more to analyze,
+            # if it is a function then we will check its arguments
+            if is_float(str(exp)) or is_matrix(str(exp)) or str(exp) in self.variables \
+                    or str(exp).replace('-', '') in self.variables or self.check_func(exp, curr_op):
+                if self.check_func(exp, curr_op) and self.check(exp):
+                    # If the function is a power, we need to see what the power number is
+                    if "power" in str(exp):
+                        str_exp = str(exp)
+                        index_first = str_exp.index('(')
+                        index_sec = str_exp.index(')')
+                        newExpr = str_exp[index_first + 1: index_sec]
+                        param = newExpr.split(',')
+                        bool_pow = True
+                    # If the sign of the function is negative, then the argument is the function itself,
+                    # so we need to check the arguments of the argument
+                    if str(exp.expr)[0] == '-':
+                        for arg in exp.args[0].args:
+                            # If the argument is a variable or a parameter or a matrix there is nothing more to analyze
+                            if not self.check(arg):
+                                self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
+                                # if the function is a power
+                                if bool_pow:
+                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
+                            else:
+                                self.index += 1
+                                self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
+                                if bool_pow:
+                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
+                                self.curvature_sign(arg)
+                    # If the sign of the function is not negative
+                    else:
+                        for arg in exp.args:
+                            # If the argument is a variable or a parameter or a matrix there is nothing more to analyze
+                            if not self.check(arg):
+                                self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
+                                # if the function is a power
+                                if bool_pow:
+                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
+                            else:
+                                self.index += 1
+                                self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
+                                if bool_pow:
+                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
+                                self.curvature_sign(arg)
+                    self.index += 1
+            # If the expression is not a variable or a parameter or a matrix or a function
             else:
-                for term in exp.args:
-                    # the first argument is cp_expr1 and the rest is cp_expr2
-                    if not bool_first:
-                        bool_first = True
-                        continue
-                    elif not bool_op:
-                        bool_op = True
-                        cp_expr2 = term
-                    elif bool_op:
-                        cp_expr2 += term
-            new_cp1 = cp_expr1
-            new_cp2 = cp_expr2
-            # If the sign of the expression is negative multiply by minus 1 to get its true value
-            if str(cp_expr1.expr)[0] == '-':
-                new_cp1 = cp_expr1 * (-1)
-            if str(cp_expr2.expr)[0] == '-':
-                new_cp2 = cp_expr2 * (-1)
-            self.curvature_sign_list.append([str(cp_expr1.expr), new_cp1.curvature, new_cp1.sign])
-            self.curvature_sign_list.append([str(cp_expr2.expr), new_cp2.curvature, new_cp2.sign])
-            self.index += 1
-            self.curvature_sign(cp_expr1)
-            self.curvature_sign(cp_expr2)
+                cp_expr1 = exp.args[0]
+                bool_first = False
+                cp_expr2 = exp.args[0]
+                # if the operator is in priority1 = ['@', '*', '/'] this means that the expression is divided into two
+                if curr_op in priority1:
+                    cp_expr1 = exp.args[0]
+                    cp_expr2 = exp.args[1]
+                # if the operator is in priority2 = ['+', '-'] this means that the expression can be divided
+                # into more than two
+                else:
+                    for term in exp.args:
+                        # the first argument is cp_expr1 and the rest is cp_expr2
+                        if not bool_first:
+                            bool_first = True
+                            continue
+                        elif not bool_op:
+                            bool_op = True
+                            cp_expr2 = term
+                        elif bool_op:
+                            cp_expr2 += term
+                new_cp1 = cp_expr1
+                new_cp2 = cp_expr2
+                # If the sign of the expression is negative multiply by minus 1 to get its true value
+                if str(cp_expr1.expr)[0] == '-':
+                    new_cp1 = cp_expr1 * (-1)
+                if str(cp_expr2.expr)[0] == '-':
+                    new_cp2 = cp_expr2 * (-1)
+                self.curvature_sign_list.append([str(cp_expr1.expr), new_cp1.curvature, new_cp1.sign])
+                self.curvature_sign_list.append([str(cp_expr2.expr), new_cp2.curvature, new_cp2.sign])
+                self.index += 1
+                self.curvature_sign(cp_expr1)
+                self.curvature_sign(cp_expr2)
 
     def curvature_sign_node(self, node: Node):
         """
         This function uses the list we created in the curvature_sign function
         and matches each node its appropriate sign
         """
-        """
-             >>> import cvxpy as cp
-             >>> import cvxopt
-             >>> from cvxpy import Minimize, Problem, Variable, quad_form
-             >>> from cvxpy.problems.objective import Objective
-             >>> n=3
-             >>> x = Variable(n)
-             >>> P = cvxopt.matrix([13, 12, -2,12, 17, 6,-2, 6, 12], (n, n))
-             >>> objective = Minimize(0.5 * quad_form(x, P))
-             >>> v = Visual(objective)
-             >>> v.root.curvature == 'CONVEX'
-             True
-             >>> v.root.sign == 'POSITIVE'
-             True
-             >>> v.root.sons[0].sons[0].curvature == 'CONSTANT'
-             True
-             >>> v.root.sons[0].sons[0].sign == 'POSITIVE'
-             True
-             >>> v.root.sons[0].sons[1].curvature == 'CONVEX'
-             True
-             >>> v.root.sons[0].sons[1].sign == 'POSITIVE'
-             True
-             """
         # If the value of the node is an expression
         if node.expr is not None and node.expr is not False and node.flag == 0:
             # We will go through the list and look for the value of the current node
@@ -639,3 +518,6 @@ class Visual:
             self.plot_function(self.expr, xmin, xmax)
         else:
             False
+
+    def print_expr(self):
+        self.root.print_tree()

@@ -1,7 +1,7 @@
 """
     >>> from Visual.visual import *
     >>> import numpy as np
-    >>> from Visual import binary_tree
+    >>> from Visual import expression_tree
     >>> from tkinter.ttk import Treeview
     >>> import tkinter as tk
     >>> from tkinter import font, ttk

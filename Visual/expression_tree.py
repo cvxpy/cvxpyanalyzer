@@ -42,8 +42,11 @@ class Node:
     def checkin_sons(self, expr: str):
         for s in self.sons:
             expression = expr.split(' ')
+            print("expr: ",expr,"\n")
+            print("s: ",s.expr,"\n")
             bool = True
             for e in expression:
+                print("e: ", e,"   \ndone")
                 if not s.expr.__contains__(e):
                     bool = False
                     break
