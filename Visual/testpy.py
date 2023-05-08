@@ -60,21 +60,36 @@ def test_priority():
     y = Variable()
     z = Variable(n)
     objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r + y)
+
     v = Visual(objective)
-    stri = str(objective.expr).replace("+ -", " - ")
-    assert stri == v.root.expr
-    assert not v.root.checkin_sons('@')
-    assert v.root.checkin_sons('-')
+    assert '-' == v.priority(v.expr)
+    assert not '@' == v.priority(v.expr)
     n = v.root.node_son('-')
-    assert n.checkin_sons('0.5 @ QuadForm(var1, [[13. 12. -2.] [12. 17.  6.] [-2.  6. 12.]])')
     n = n.sons[0]
-    assert n.checkin_sons('@')
-    n = n.sons[0]
-    assert n.checkin_sons('0.5')
-    assert n.checkin_sons('QuadForm(var1, [[13. 12. -2.] [12. 17.  6.] [-2.  6. 12.]])')
-    n = n.sons[1]
-    assert not n.checkin_sons('var1')
-    assert n.checkin_sons('QuadForm')
+    assert '@' == v.priority(n.expr)
+    assert  not 'QuadForm' == v.priority(n.expr)
+    n = v.root.node_son('-').sons[1]
+    assert '+' == v.priority(n.expr)
+    n = n.sons[0].sons[1]
+    assert '+' == v.priority(n.expr)
+    n = n.sons[0].sons[1]
+    assert '+' == v.priority(n.expr)
+    n = v.root.node_son('-').sons[1].sons[0].sons[1].sons[0].sons[0]
+    assert '@' == v.priority(n.expr)
+    # stri = str(objective.expr).replace("+ -", " - ")
+    # assert stri == v.root.expr
+    # assert not v.root.checkin_sons('@')
+    # assert v.root.checkin_sons('-')
+    # n = v.root.node_son('-')
+    # assert n.checkin_sons('0.5 @ QuadForm(var1, [[13. 12. -2.] [12. 17.  6.] [-2.  6. 12.]])')
+    # n = n.sons[0]
+    # assert n.checkin_sons('@')
+    # n = n.sons[0]
+    # assert n.checkin_sons('0.5')
+    # assert n.checkin_sons('QuadForm(var1, [[13. 12. -2.] [12. 17.  6.] [-2.  6. 12.]])')
+    # n = n.sons[1]
+    # assert not n.checkin_sons('var1')
+    # assert n.checkin_sons('QuadForm')
 
 
 
