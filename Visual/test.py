@@ -10,7 +10,7 @@
     >>> from cvxpy import Minimize, Problem, Variable, quad_form
     >>> from cvxpy.problems.objective import Objective
     >>> import operator
-    >>> from Visual.binary_tree import Node
+    >>> from Visual.expression_tree import Node
     >>> n = 3
     >>> P = cvxopt.matrix([13, 12, -2,12, 17, 6,-2, 6, 12], (n, n))
     >>> q = cvxopt.matrix([-22, -14.5, 13], (n, 1))

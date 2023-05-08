@@ -486,7 +486,7 @@ class Visual:
             self.curvature_sign_node(child)
 
     def plot_function(self, expr, xminr, xmaxr, num_points=1000):
-        func, xmin, xmax = self.string_to_plot(self.expr)
+        func = self.string_to_plot(self.expr)
         x_vals = np.linspace(xminr, xmaxr, num_points)
         y_vals = func(x_vals)
         plt.plot(x_vals, y_vals)
@@ -511,7 +511,7 @@ class Visual:
 
         # Construct the lambda function and return the input for plot_function
         func = lambda x: eval(expr)
-        return (func, -10, 10)
+        return func
 
     def draw_graph(self, xmin=-10, xmax=10):
         if self.check_2_dimensions():
