@@ -24,20 +24,27 @@ if __name__ == '__main__':
     objective1 = Minimize((x2 - y2) ** 2)
     objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
 
+    print("----objective----")
     v = Visual(objective)
     v.show()
     v.show_and_save("file_name")
     v.draw_graph()
     v.print_expr()
+    print("----objective----")
 
+    print("----objective1----")
     v = Visual(objective1)
     v.show()
     v.show_and_save("file_name1")
     v.draw_graph()
     v.print_expr()
+    print("----objective1----")
 
+    print("----objective2----")
     v = Visual(objective2)
     v.show()
     v.show_and_save("file_name2")
     v.draw_graph()
     v.print_expr()
+    print("----objective2----")
+

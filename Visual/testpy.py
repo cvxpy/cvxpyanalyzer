@@ -67,7 +67,7 @@ def test_priority():
     n = v.root.node_son('-')
     n = n.sons[0]
     assert '@' == v.priority(n.expr)
-    assert  not 'QuadForm' == v.priority(n.expr)
+    assert not 'QuadForm' == v.priority(n.expr)
     n = v.root.node_son('-').sons[1]
     assert '+' == v.priority(n.expr)
     n = n.sons[0].sons[1]
@@ -92,7 +92,6 @@ def test_priority():
     # assert n.checkin_sons('QuadForm')
 
 
-
 def test_create_lists():
     n = 3
     P = cvxopt.matrix([13, 12, -2,
@@ -112,7 +111,7 @@ def test_create_lists():
     objective1 = Minimize((x2 - y2) ** 2)
     objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
     v = Visual(objective)
-    rightOperators = ['@','+']
+    rightOperators = ['@', '+']
     rightVaribale = ['var4']
     rightFunc = ['power(var4, 2.0)']
     v.create_lists(v.expr)
@@ -128,7 +127,7 @@ def test_create_lists():
     v = Visual(objective1)
     v.create_lists(v.expr)
     rightOperators = ['-']
-    rightVaribale = ['var3','var4']
+    rightVaribale = ['var3', 'var4']
     rightFunc = ['power(var3 - var4, 2.0)']
     for e in rightFunc:
         assert e in v.func
@@ -154,7 +153,6 @@ def test_create_lists():
     for s in rightVaribale:
         assert s in v.variables
     assert not str(x2.expr) in v.variables
-
 
 
 def test_curvature_sign():
@@ -252,4 +250,4 @@ def test_code():
     pass
 
 
-
+test_create_lists()
