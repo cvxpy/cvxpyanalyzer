@@ -43,7 +43,7 @@ by running `v.draw_graph()` you will get the following graph:<br />
 
 It displays all the solutions of the equation that we want to see when substituting variable values between -10 to 10.
 
-## v.show_and_save():
+## v.show_and_save(file_name):
 We created this function to enable viewing the expression in a graph format with nodes, which will allow for visual and clear representation. <br />
 For each expression you choose, the function's output is a PDF file named "file_name.pdf", which is very similar to the DCP Analyzer. https://dcp.stanford.edu/analyzer <br />
 
