@@ -20,8 +20,9 @@ During the development process, we have created three different functions that a
 As you can see in the file:  ``examples.py`` <br />
 You can see several examples of how to run expressions using the different functions we created.
 
-## v.draw_graph():
+## v.draw_graph(xmin, xmax):
 A function that graphically displays all the solutions of a specific expression where the variable is represented as X and the equation as Y.
+If a function is called without any arguments, the default value will be xmin=-10 xmax=10.
 
 Here you can see the results:
 As you can see for the phrase: `Minimize(-1 * (y2) ** 2 + 2 * y2)` <br />
@@ -42,7 +43,7 @@ by running `v.draw_graph()` you will get the following graph:<br />
 
 It displays all the solutions of the equation that we want to see when substituting variable values between -10 to 10.
 
-## v.show_digraph():
+## v.show_and_save():
 We created this function to enable viewing the expression in a graph format with nodes, which will allow for visual and clear representation. <br />
 For each expression you choose, the function's output is a PDF file named "file_name.pdf", which is very similar to the DCP Analyzer. https://dcp.stanford.edu/analyzer <br />
 
@@ -56,7 +57,7 @@ In the ``example.py`` file you can run several expressions on this function.
     y2 = Variable()
     objective1 = Minimize((x2 - y2) ** 2)
     v = Visual(objective1)
-    v.show_digraph("file_name")
+    v.show_and_save("file_name")
 ```
 
 Minimize((x2 - y2) ** 2) <br />
@@ -85,7 +86,7 @@ This function prints the expression in the structure of a tree in the RUN window
     print(v.curvature_sign_list)
     print("---objective 1 ---")
 
-    v.root.print_tree()
+    v.print_expr()
 ```
 For each expression, you can run the following function,<br />
 This will produce a graph that will be displayed in the runtime window.
@@ -95,4 +96,20 @@ For example **for the first expression**
 
 you will get : 
 ![image](https://user-images.githubusercontent.com/93201414/229359112-bc30b68a-bcd8-4739-b302-0d96932c2b8f.png)
+
+## v.show():
+The function uses the library tkinter <br />
+The output shows the tree in a way that opens and closes according to the user <br />
+Unlike show_and_save() the output is not saved but opens in a pop-up window <br />
+
+```
+    x2 = Variable()
+    y2 = Variable()
+    objective1 = Minimize((x2 - y2) ** 2)
+    v = Visual(objective1)
+    v.show()
+```
+
+<img width="158" alt="two" src="https://user-images.githubusercontent.com/93201414/237039372-d6d79c0c-d564-467d-ba21-b5290e7873ba.PNG">
+
 
