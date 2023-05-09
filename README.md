@@ -16,7 +16,7 @@ tech_support(problem)
 
 # Visual:
 The Purpose of our project is to visualize the Problem expressions which can be found in CVXPY library. <br /> 
-During the development process, we have created three different functions that allow to visualize the Problem expressions in a more accessible and clear way for library users. <br />
+During the development process, we have created four different functions that allow to visualize the Problem expressions in a more accessible and clear way for library users. <br />
 As you can see in the file:  ``examples.py`` <br />
 You can see several examples of how to run expressions using the different functions we created.
 
