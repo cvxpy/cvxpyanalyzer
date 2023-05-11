@@ -152,7 +152,12 @@ class Visual:
             # --------variables---------
             if "var" in s:
                 index = s.index("var")
-                new_var = "var" + s[index + 3]
+                new_var = "var"
+                for char in s[index + 3:]:
+                    if char.isdigit():
+                        new_var += char
+                    else:
+                        break
                 if new_var not in self.variables:
                     self.variables.append(new_var)
             # --------variables---------
@@ -457,7 +462,6 @@ class Visual:
                                 self.index += 1
                                 self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
                                 if bool_pow:
-                                    print("param= ", param)
                                     if str(param[1][1]).__eq__('-'):
                                         s = 'NEGATIVE'
                                     else:
@@ -467,6 +471,8 @@ class Visual:
                     self.index += 1
             # If the expression is not a variable or a parameter or a matrix or a function
             else:
+                if not exp.args:
+                    return
                 cp_expr1 = exp.args[0]
                 bool_first = False
                 cp_expr2 = exp.args[0]

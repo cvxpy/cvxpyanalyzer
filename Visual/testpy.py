@@ -55,10 +55,8 @@ def test_priority():
     P = cvxopt.matrix([13, 12, -2, 12, 17, 6, -2, 6, 12], (n, n))
     q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
     r = 1
-    x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
     x = Variable(n)
     y = Variable()
-    z = Variable(n)
     objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r + y)
 
     v = Visual(objective)
@@ -99,21 +97,19 @@ def test_create_lists():
                        -2, 6, 12], (n, n))
     q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
     r = 1
-    x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
 
     x1 = Variable(n)
     y1 = Variable()
     x2 = Variable()
     y2 = Variable()
-    z1 = Variable(n)
 
     objective = Minimize(-1 * y2 ** 2 + 2 * y2)
     objective1 = Minimize((x2 - y2) ** 2)
     objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
     v = Visual(objective)
     rightOperators = ['@', '+']
-    rightVaribale = ['var4']
-    rightFunc = ['power(var4, 2.0)']
+    rightVaribale = ['var97']
+    rightFunc = ['power(var97, 2.0)']
     v.create_lists(v.expr)
     for e in rightFunc:
         assert e in v.func
@@ -126,12 +122,11 @@ def test_create_lists():
     assert not str(x1.expr) in v.variables
     v = Visual(objective1)
     v.create_lists(v.expr)
-    rightOperators = ['power(var3 - var4, 2.0)']
-    rightVaribale = ['var3', 'var4']
-    rightFunc = ['power(var3 - var4, 2.0)']
+    rightOperators = ['power(var96 - var97, 2.0)']
+    rightVaribale = ['var96', 'var97']
+    rightFunc = ['power(var96 - var97, 2.0)']
     for e in rightFunc:
         assert e in v.func
-
     assert not 'QuardForm' in v.func
     for o in rightOperators:
         assert o in v.operators
@@ -142,8 +137,8 @@ def test_create_lists():
     v = Visual(objective2)
     v.create_lists(v.expr)
     rightOperators = ['-', '+', '@']
-    rightVaribale = ['var1']
-    rightFunc = ['QuadForm(var1, [[13. 12. -2.] [12. 17. 6.] [-2. 6. 12.]])', 'quad_over_lin(var1, 1.0)']
+    rightVaribale = ['var94']
+    rightFunc = ['QuadForm(var94, [[13. 12. -2.] [12. 17. 6.] [-2. 6. 12.]])', 'quad_over_lin(var94, 1.0)']
     for e in rightFunc:
         assert e in v.func
     assert not 'power' in v.func
@@ -236,3 +231,6 @@ def test_insert_func():
 # --------------expression_tree--------------
 
 test_curvature_sign()
+test_split_expr()
+test_priority()
+test_create_lists()
