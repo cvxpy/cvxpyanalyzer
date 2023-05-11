@@ -1,3 +1,6 @@
+import re
+
+
 class Node:
     # Each node has a unique name because an operator can appear more than once
     uniqNameForTree = 0
@@ -110,19 +113,14 @@ class Node:
         """
           This function inserts a function type operator and
           this means that the expression should be split according to the number of parameters the function accepts
-        >>> n = Node(None,'QuadForm(var1, [[13. 12. -2.][12. 17.  6.][-2.  6. 12.]])  - quad_over_lin(var1, 1.0) + [[-22.  -14.5  13. ]] @ var1 + 1.0 + var2',0)
-        >>> n.insert('-')
-        >>> n.sons[0].sons[0].insert_func('QuadForm')
-        >>> n.sons[0].sons[0].sons[0].sons[0].expr.__contains__('var1')
-        >>> n.sons[0].sons[0].sons[0].sons[1].expr.__contains__('[[13. 12. -2.][12. 17.  6.][-2.  6. 12.]]')
         """
         index_first = op.index('(')
-        index_sec = op.index(')')
+        index_sec = op.rfind(')')
         newExpr = op[index_first + 1: index_sec]
         # the operator is the name of the function
         node = Node(self, op.split('(')[0], 1)
         self.sons.append(node)
-        param = newExpr.split(',')
+        param = re.split(r',(?![^()]*\))', newExpr)
         # The children of a function type operator are the parameters it accepts
         for p in param:
             node.sons.append(Node(node, p, 0))

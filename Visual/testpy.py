@@ -126,7 +126,7 @@ def test_create_lists():
     assert not str(x1.expr) in v.variables
     v = Visual(objective1)
     v.create_lists(v.expr)
-    rightOperators = ['-']
+    rightOperators = ['power(var3 - var4, 2.0)']
     rightVaribale = ['var3', 'var4']
     rightFunc = ['power(var3 - var4, 2.0)']
     for e in rightFunc:
@@ -156,7 +156,70 @@ def test_create_lists():
 
 
 def test_curvature_sign():
-    pass
+    x = Variable()
+    n = 3
+    P = cvxopt.matrix([13, 12, -2,
+                       12, 17, 6,
+                       -2, 6, 12], (n, n))
+    q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
+    r = 1
+    x1 = Variable(n)
+    y1 = Variable()
+    objective = Minimize(-1 * x ** 2 + 2 * x)
+    v = Visual(objective)
+    rightCurvature_sign = [['-1.0 @ power(var1, 2.0) + 2.0 @ var1', 'CONCAVE', 'UNKNOWN'],
+                           ['-1.0 @ power(var1, 2.0)', 'CONVEX', 'POSITIVE'], ['2.0 @ var1', 'AFFINE', 'UNKNOWN'],
+                           ['-1.0', 'CONSTANT', 'POSITIVE'], ['power(var1, 2.0)', 'CONVEX', 'POSITIVE'],
+                           ['var1', 'AFFINE', 'UNKNOWN'], [' 2.0', 'CONSTANT', 'POSITIVE'],
+                           ['2.0', 'CONSTANT', 'NONNEGATIVE'], ['var1', 'AFFINE', 'UNKNOWN']]
+    for c in rightCurvature_sign:
+        assert c in v.curvature_sign_list
+
+    objective = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
+    v = Visual(objective)
+    rightCurvature_sign = [['0.5 @ QuadForm(var2, [[13. 12. -2.]\n [12. 17.  6.]\n [-2.  6. 12.]])  - '
+                            'quad_over_lin(var2, 1.0) + [[-22.  -14.5  13. ]] @ var2 + 1.0 + var3', 'UNKNOWN',
+                            'UNKNOWN']
+        , ['0.5 @ QuadForm(var2, [[13. 12. -2.]\n [12. 17.  6.]\n [-2.  6. 12.]])', 'CONVEX', 'POSITIVE'],
+                           ['-quad_over_lin(var2, 1.0) + [[-22.  -14.5  13. ]] @ var2 + 1.0 + var3', 'CONVEX',
+                            'UNKNOWN'], ['0.5', 'CONSTANT', 'POSITIVE'],
+                           ['QuadForm(var2, [[13. 12. -2.]\n [12. 17.  6.]\n [-2.  6. 12.]])', 'CONVEX', 'POSITIVE'],
+                           ['var2', 'AFFINE', 'UNKNOWN'],
+                           ['[[13. 12. -2.]\n [12. 17.  6.]\n [-2.  6. 12.]]', 'CONSTANT', 'UNKNOWN'],
+                           ['-quad_over_lin(var2, 1.0)', 'CONVEX', 'POSITIVE'],
+                           ['[[-22.  -14.5  13. ]] @ var2 + 1.0 + var3', 'AFFINE', 'UNKNOWN'],
+                           ['var2', 'AFFINE', 'UNKNOWN'], ['1.0', 'CONSTANT', 'POSITIVE'],
+                           ['[[-22.  -14.5  13. ]] @ var2', 'AFFINE', 'UNKNOWN'], ['1.0 + var3', 'AFFINE', 'UNKNOWN'],
+                           ['[[-22.  -14.5  13. ]]', 'CONSTANT', 'UNKNOWN'], ['var2', 'AFFINE', 'UNKNOWN'],
+                           ['1.0', 'CONSTANT', 'NONNEGATIVE'], ['var3', 'AFFINE', 'UNKNOWN']]
+    for c in rightCurvature_sign:
+        assert c in v.curvature_sign_list
+    #
+    objective = Minimize(x ** 3)
+    v = Visual(objective)
+    rightCurvature_sign = [['power(var1, 3.0)', 'CONVEX', 'POSITIVE'], ['var1', 'AFFINE', 'UNKNOWN'],
+                           [' 3.0', 'CONSTANT', 'POSITIVE']]
+    for c in rightCurvature_sign:
+        assert c in v.curvature_sign_list
+
+    objective = Minimize(cp.log(x))
+    v = Visual(objective)
+    rightCurvature_sign = [['log(var1)', 'CONCAVE', 'UNKNOWN'], ['var1', 'AFFINE', 'UNKNOWN']]
+    for c in rightCurvature_sign:
+        assert c in v.curvature_sign_list
+
+    objective = Minimize(2 * cp.exp(-x) - cp.sqrt(cp.log(1 + x ** -2)))
+    v = Visual(objective)
+    rightCurvature_sign = [['2.0 @ exp(-var1)  - power(log(1.0 + power(var1, -2.0)), 0.5)', 'UNKNOWN', 'UNKNOWN'],
+                           ['2.0 @ exp(-var1)', 'CONVEX', 'POSITIVE'],
+                           ['-power(log(1.0 + power(var1, -2.0)), 0.5)', 'QUASILINEAR', 'POSITIVE'],
+                           ['2.0', 'CONSTANT', 'POSITIVE'], ['exp(-var1)', 'CONVEX', 'POSITIVE'],
+                           ['-var1', 'AFFINE', 'UNKNOWN'], ['log(1.0 + power(var1, -2.0))', 'QUASILINEAR', 'UNKNOWN'],
+                           [' 0.5', 'CONSTANT', 'POSITIVE'], ['1.0 + power(var1, -2.0)', 'CONVEX', 'POSITIVE'],
+                           ['1.0', 'CONSTANT', 'POSITIVE'], ['power(var1, -2.0)', 'CONVEX', 'POSITIVE'],
+                           ['var1', 'AFFINE', 'UNKNOWN'], [' -2.0', 'CONSTANT', 'NEGATIVE']]
+    for c in rightCurvature_sign:
+        assert c in v.curvature_sign_list
 
 
 # --------------visual--------------
@@ -172,82 +235,4 @@ def test_insert_func():
 
 # --------------expression_tree--------------
 
-
-def test_code():
-    # n = 3
-    # P = cvxopt.matrix([13, 12, -2, 12, 17, 6, -2, 6, 12], (n, n))
-    # q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
-    # r = 1
-    # x_star = cvxopt.matrix([1, 1 / 2, -1], (n, 1))
-    # x = Variable(n)
-    # y = Variable()
-    # z = Variable(n)
-    # objective = Minimize(0.5 * quad_form(x, P) - cp.sum_squares(x) + q.T @ x + r + y)
-    # v = Visual(objective)
-    # stri = str(objective.expr).replace("+ -", " - ")
-    # assert stri == v.root.expr
-    # assert v.root.checkin_sons('-')
-    # n = v.root.node_son('-')
-    # assert n.checkin_sons('0.5 @ QuadForm(var1, [[13. 12. -2.] [12. 17.  6.] [-2.  6. 12.]])')
-    # A_wall = 100
-    # A_flr = 10
-    # alpha = 0.5
-    # beta = 2
-    # gamma = 0.5
-    # delta = 2
-    # h = cp.Variable(pos=True, name="h")
-    # w = cp.Variable(pos=True, name="w")
-    # d = cp.Variable(pos=True, name="d")
-    # volume = h * w * d
-    # wall_area = 2 * (h * w + h * d)
-    # flr_area = w * d
-    # hw_ratio = h / w
-    # dw_ratio = d / w
-    # constraints = [wall_area <= A_wall, flr_area <= A_flr, hw_ratio >= alpha, hw_ratio <= beta, dw_ratio >= gamma,
-    #                dw_ratio <= delta]
-    # objective = cp.Maximize(volume)
-    # v = Visual(objective)
-    # stri = str(objective.expr).replace("+ -", " - ")
-    # assert stri == v.root.expr
-    # assert v.root.checkin_sons('@')
-    # assert not v.root.checkin_sons('h')
-    # n = v.root.node_son('@')
-    # assert n.checkin_sons('h')
-    # assert n.checkin_sons(n.sons[0].expr)
-    # assert not n.checkin_sons('c')
-    # assert n.checkin_sons(n.sons[1].expr)
-    # n = n.node_son(n.sons[1].expr)
-    # assert n.checkin_sons('@')
-    # n = n.node_son('@')
-    # assert n.checkin_sons(n.sons[0].expr)
-    # assert n.checkin_sons(n.sons[1].expr)
-    # assert not n.checkin_sons('x')
-    # #still need to split the object to the other tests
-    # objective = cp.Maximize(h)
-    # v = Visual(objective)
-    # assert not v.root.checkin_sons('+')
-    # assert len(v.root.sons) == 0
-    # objective = Minimize(quad_form(x, P))
-    # stri = str(objective.expr).replace("+ -", " - ")
-    # v = Visual(objective)
-    # assert v.root.checkin_sons('QuadForm')
-    # assert not v.root.checkin_sons('var1')
-    # n = v.root.node_son('QuadForm')
-    # assert n.checkin_sons('var1')
-    # assert n.checkin_sons(str(P))
-    # volume = h * w + d
-    # objective = cp.Maximize(volume)
-    # v = Visual(objective)
-    # assert not v.root.checkin_sons('@')
-    # assert v.root.checkin_sons('+')
-    # n = v.root.node_son('+')
-    # assert n.checkin_sons('d')
-    # assert n.checkin_sons('h @ w')
-    # x = Variable()
-    # exp = -quad_form(x, P)
-    # op = "quad_form(x, P)"
-    # assert v.check_func(exp, op)
-    pass
-
-
-test_create_lists()
+test_curvature_sign()

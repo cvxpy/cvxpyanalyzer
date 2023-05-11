@@ -146,7 +146,7 @@ class Visual:
         isMatrix = False
         func_string = ""
         matrix_string = ""
-        counter = 1
+        counter1 = 0
         # we will go through all the characters in the string
         for s in exp.split():
             # --------variables---------
@@ -160,6 +160,20 @@ class Visual:
             # --------function---------
             # The expression of the function is over
             if ')' in s:
+                counter1 += s.count('(')
+                counter1 -= s.count(')')
+                if counter1 == 0:
+                    isFunc = False
+                    func_string += " " + s
+                    # We will put the expression of the function in the list of functions
+                    # and also in the list of operators because it is a type of operator
+                    self.func.append(func_string)
+                    self.operators.append(func_string)
+                    func_string = ""
+                    continue
+                if counter1 != 0:
+                    func_string += s
+                    continue
                 isFunc = False
                 func_string += " " + s
                 # We will put the expression of the function in the list of functions
@@ -169,11 +183,23 @@ class Visual:
                 func_string = ""
                 continue
             if isFunc:
+                counter1 += s.count('(')
                 func_string += " " + s
                 continue
             # The expression of the function is start
             if '(' in s:
                 isFunc = True
+                counter1 += s.count('(')
+                counter1 -= s.count(')')
+                if counter1 == 0:
+                    isFunc = False
+                    func_string += " " + s
+                    # We will put the expression of the function in the list of functions
+                    # and also in the list of operators because it is a type of operator
+                    self.func.append(func_string)
+                    self.operators.append(func_string)
+                    func_string = ""
+                    continue
                 func_string += s
                 continue
             # --------function---------
@@ -383,12 +409,12 @@ class Visual:
                     or str(exp).replace('-', '') in self.variables or self.check_func(exp, curr_op):
                 if self.check_func(exp, curr_op) and self.check(exp):
                     # If the function is a power, we need to see what the power number is
-                    if "power" in str(exp):
+                    if "power" in str(exp) and str(curr_op).replace(' ', '')[0:5].__eq__("power"):
                         str_exp = str(exp)
                         index_first = str_exp.index('(')
-                        index_sec = str_exp.index(')')
+                        index_sec = str_exp.rfind(')')
                         newExpr = str_exp[index_first + 1: index_sec]
-                        param = newExpr.split(',')
+                        param = re.split(r',(?![^()]*\))', newExpr)
                         bool_pow = True
                     # If the sign of the function is negative, then the argument is the function itself,
                     # so we need to check the arguments of the argument
@@ -399,12 +425,20 @@ class Visual:
                                 self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
                                 # if the function is a power
                                 if bool_pow:
-                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
+                                    if str(param[1][1]).__eq__('-'):
+                                        s = 'NEGATIVE'
+                                    else:
+                                        s = 'POSITIVE'
+                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', s])
                             else:
                                 self.index += 1
                                 self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
                                 if bool_pow:
-                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
+                                    if str(param[1][1]).__eq__('-'):
+                                        s = 'NEGATIVE'
+                                    else:
+                                        s = 'POSITIVE'
+                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', s])
                                 self.curvature_sign(arg)
                     # If the sign of the function is not negative
                     else:
@@ -414,12 +448,21 @@ class Visual:
                                 self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
                                 # if the function is a power
                                 if bool_pow:
-                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
+                                    if str(param[1][1]).__eq__('-'):
+                                        s = 'NEGATIVE'
+                                    else:
+                                        s = 'POSITIVE'
+                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', s])
                             else:
                                 self.index += 1
                                 self.curvature_sign_list.append([str(arg), arg.curvature, arg.sign])
                                 if bool_pow:
-                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', None])
+                                    print("param= ", param)
+                                    if str(param[1][1]).__eq__('-'):
+                                        s = 'NEGATIVE'
+                                    else:
+                                        s = 'POSITIVE'
+                                    self.curvature_sign_list.append([str(param[1]), 'CONSTANT', s])
                                 self.curvature_sign(arg)
                     self.index += 1
             # If the expression is not a variable or a parameter or a matrix or a function
@@ -478,7 +521,7 @@ class Visual:
                     if str(arg[2]).__eq__("NONNEGATIVE"):
                         arg[2] = "POSITIVE"
                     if str(arg[2]).__eq__("NONPOSITIVE"):
-                        arg[3] = "NEGATIVE"
+                        arg[2] = "NEGATIVE"
                     node.sign = arg[2]
                     break
         # We will go over the children of the node and do the same
