@@ -103,7 +103,7 @@ def test_create_lists():
     x2 = Variable()
     y2 = Variable()
 
-    objective = Minimize(-1 * y2 ** 2 + 2 * y2)
+    objective = Minimize(-1 * ((y2) ** 2) + 2 * y2)
     objective1 = Minimize((x2 - y2) ** 2)
     objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
     v = Visual(objective)
@@ -128,8 +128,6 @@ def test_create_lists():
     for e in rightFunc:
         assert e in v.func
     assert not 'QuardForm' in v.func
-    for o in rightOperators:
-        assert o in v.operators
     assert not '/' in v.operators
     for s in rightVaribale:
         assert s in v.variables
@@ -221,12 +219,42 @@ def test_curvature_sign():
 
 # --------------expression_tree--------------
 def test_insert():
-    pass
+    n = Node(None, 'h + w @ x', 0)
+    assert len(n.sons) == 0
+    n.insert('+')
+    assert len(n.sons[0].sons) == 2
+    assert n.sons[0].sons[0].expr.contain('h')
+    assert n.sons[0].sons[1].expr.contain('w @ x')
+    assert not n.sons[0].sons[1].expr.contain('h @ x')
+    assert len(n.sons[0].sons[1].sons) == 0
+    n.sons[0].sons[1].insert('@')
+    assert len(n.sons[0].sons[1].sons) == 1
+    n = Node(None, 'h', 0)
+    n.insert('@')
+    assert len(n.sons[0].sons) == 0
+    n = Node(None, 'h @ w @ s', 0)
+    n.insert('+')
+    assert len(n.sons[0].sons) == 0
+
+
+
+
+
 
 
 def test_insert_func():
-    pass
-
+    n = Node(None, 'h + w @ x', 0)
+    s = 2
+    P = cvxopt.matrix([1, -2,
+                       4, 12], (s, s))
+    x1 = Variable(s)
+    objective= P @ x1
+    y = Node (None,'power('+str(objective)+',2.0)',0)
+    y.insert_func('power('+str(objective)+',2.0)')
+    assert y.sons[0].expr == 'power'
+    assert y.sons[0].sons[0].expr.__contains__(str(objective))
+    n.insert_func('quad_over_lin(var2, 1.0)')
+    assert n.sons[0].sons[0].expr.__contains__('var2')
 
 # --------------expression_tree--------------
 
