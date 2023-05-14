@@ -1,5 +1,6 @@
 import cvxpy as cp
 import cvxopt
+import numpy as np
 from cvxpy import Minimize, Variable, quad_form
 from Visual.expression_tree import Node
 from Visual.visual import Visual
@@ -76,18 +77,18 @@ def test_create_lists():
     q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
     r = 1
 
-    x1 = Variable(n)
-    y1 = Variable()
-    x2 = Variable()
-    y2 = Variable()
+    x1 = Variable(n,name='var3')
+    y1 = Variable(name='y1')
+    x2 = Variable(name='var1')
+    y2 = Variable(name='var2')
 
     objective = Minimize(-1 * ((y2) ** 2) + 2 * y2)
     objective1 = Minimize((x2 - y2) ** 2)
     objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
     v = Visual(objective)
     rightOperators = ['@', '+']
-    rightVaribale = ['var96']
-    rightFunc = ['power(var96, 2.0)']
+    rightVaribale = ['var2']
+    rightFunc = ['power(var2, 2.0)']
     v.create_lists(v.expr)
     for e in rightFunc:
         assert e in v.func
@@ -100,8 +101,8 @@ def test_create_lists():
     assert not str(x1.expr) in v.variables
     v = Visual(objective1)
     v.create_lists(v.expr)
-    rightVaribale = ['var95', 'var96']
-    rightFunc = ['power(var95 - var96, 2.0)']
+    rightVaribale = ['var1', 'var2']
+    rightFunc = ['power(var1 - var2, 2.0)']
     for e in rightFunc:
         assert e in v.func
     assert not 'QuardForm' in v.func
@@ -112,8 +113,8 @@ def test_create_lists():
     v = Visual(objective2)
     v.create_lists(v.expr)
     rightOperators = ['-', '+', '@']
-    rightVaribale = ['var93']
-    rightFunc = ['QuadForm(var93, [[13. 12. -2.] [12. 17. 6.] [-2. 6. 12.]])', 'quad_over_lin(var93, 1.0)']
+    rightVaribale = ['var3']
+    rightFunc = ['QuadForm(var3, [[13. 12. -2.] [12. 17. 6.] [-2. 6. 12.]])', 'quad_over_lin(var3, 1.0)']
     for e in rightFunc:
         assert e in v.func
     assert not 'power' in v.func
@@ -126,15 +127,15 @@ def test_create_lists():
 
 
 def test_curvature_sign():
-    x = Variable()
+    x = Variable(name='var1')
     n = 3
     P = cvxopt.matrix([13, 12, -2,
                        12, 17, 6,
                        -2, 6, 12], (n, n))
     q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
     r = 1
-    x1 = Variable(n)
-    y1 = Variable()
+    x1 = Variable(n,name='var2')
+    y1 = Variable(name='var3')
     objective = Minimize(-1 * x ** 2 + 2 * x)
     v = Visual(objective)
     rightCurvature_sign = [['-1.0 @ power(var1, 2.0) + 2.0 @ var1', 'CONCAVE', 'UNKNOWN'],
@@ -212,6 +213,48 @@ def test_insert():
     n = Node(None, 'h @ w @ s', 0)
     n.insert('+')
     assert len(n.sons) == 0
+    s = 4
+    P = cvxopt.matrix([1, -2, 10, 17,
+                       4, 12, 99, 13,
+                       0, 1, 6, 73,
+                       43, 100, 54, 2], (s, s))
+    WorngP = '[[  1.   4.   0.  43.]\n [ -2.  12.   1. 100.]\n [ 10.  99.   6.  54.]\n [ 17.  13.  73.   1.]] '
+    x1 = Variable(s,name='var9')
+    x2 = Variable((s,s), symmetric=True,name='var10')
+    objective = P @ x1
+    y = Node(None, str(objective), 0)
+    y.insert('+')
+    assert len(y.sons) == 0
+    y.insert('@')
+    assert len(y.sons) == 1
+    z = '[[  1.   4.   0.  43.]\n [ -2.  12.   1. 100.]\n [ 10.  99.   6.  54.]\n [ 17.  13.  73.   2.]] '
+    assert y.sons[0].sons[0].expr.__contains__(z)
+    assert not y.sons[0].sons[0].expr.__contains__(WorngP)
+    assert y.sons[0].sons[1].expr.__contains__('var9')
+    objective = P + x2
+    y = Node(None, str(objective), 0)
+    y.insert('@')
+    assert len(y.sons) == 0
+    y.insert('+')
+    assert len(y.sons) == 1
+    assert y.sons[0].sons[0].expr.__contains__(z)
+    assert not y.sons[0].sons[0].expr.__contains__(WorngP)
+    assert y.sons[0].sons[1].expr.__contains__('var10')
+    objective = (P + x2) @ x1
+    y = Node(None, str(objective), 0)
+    #y.insert('+')
+    #assert len(y.sons) == 0
+    y.insert('@')
+    assert len(y.sons) == 1
+    assert y.sons[0].sons[1].expr.__contains__('var9')
+    assert y.sons[0].sons[0].expr.__contains__('([[  1.   4.   0.  43.]\n [ -2.  12.   1. 100.]\n [ 10.  99.   6.  54.]\n [ 17.  13.  73.   2.]] + var10) ')
+
+
+
+
+
+
+
 
 
 def test_insert_func():
@@ -227,6 +270,37 @@ def test_insert_func():
     assert y.sons[0].sons[0].expr.__contains__(str(objective))
     n.insert_func('quad_over_lin(var2, 1.0)')
     assert n.sons[0].sons[0].expr.__contains__('var2')
+    n = Node(None, 'h + w @ x', 0)
+    # create a variable
+    # define the objective as a quadratic form
+    s = 10
+    P = np.random.randn(s, s)
+    P = P.T @ P
+    x1 = Variable(s)
+    objective = cp.quad_form(x1, P)
+    # create a node for the objective squared
+    y = Node(None, 'power(' + str(objective) + ',2.0)', 0)
+    # test that the power function is inserted correctly
+    y.insert_func('power(' + str(objective) + ',2.0)')
+    assert y.sons[0].expr == 'power'
+    assert y.sons[0].sons[0].expr.__contains__(str(objective))
+
+    # create another node
+    n2 = Node(None, 'max(a, b)', 0)
+    # insert a new function into the node
+    n2.insert_func('exp(c)')
+    # test that the function is inserted correctly
+    assert n2.sons[0].expr == 'exp'
+    assert n2.sons[0].sons[0].expr == 'c'
+
+    # create a node with a variable
+    n3 = Node(None, 'x', 0)
+    # insert a new function into the node
+    n3.insert_func('abs(var1)')
+    # test that the function is inserted correctly
+    assert n3.sons[0].expr == 'abs'
+    assert n3.sons[0].sons[0].expr == 'var1'
+
 
 
 # --------------expression_tree--------------
