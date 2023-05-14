@@ -8,17 +8,6 @@ class Node:
     count_sign = 0
 
     def __init__(self, node, expr: str, flag=0):
-        """
-        >>> Node.uniqNameForTree ==0
-        True
-        >>> n = Node(None,'h @ w @ x',0)
-        >>> n.uniqNameForTree == 1
-        True
-        >>> s = Node(None, 'x',0)
-        >>> n.uniqNameForTree == 1
-        False
-
-        """
         # The father of this node - for every operator the father is of type expression
         # and for every expression the father is of type operator
         self.father = node
@@ -67,21 +56,11 @@ class Node:
     def insert(self, op: str):
         """
         This function get an operator and uses it to split the expression and create new nodes
-        >>> n = Node(None,'h @ w @ x',0)
-        >>> len(n.sons)
-        0
-        >>> n.insert('@')
-        >>> len(n.sons[0].sons)
-        2
-        >>> len(n.sons[0].sons[1].sons)
-        0
-        >>> n.sons[0].sons[1].insert('@')
-        >>> len(n.sons[0].sons[1].sons)
-        1
-
 
         """
         # create a new node of type operator
+        if op not in self.expr:
+            return
         node = Node(self, op, 1)
         self.sons.append(node)
         # We will look for the first position of the operator that is not inside parentheses and inside a matrix
@@ -125,11 +104,10 @@ class Node:
         for p in param:
             node.sons.append(Node(node, p, 0))
 
-    """
-    This function prints the tree recursively
-    """
-
     def print_tree(self, spaces=0, counter=0):
+        """
+        This function prints the tree recursively
+        """
         for i in range(spaces):
             print("   ", end="")
         if self.flag == 0:

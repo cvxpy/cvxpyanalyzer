@@ -69,6 +69,7 @@ class Visual:
         self.root = Node(None, self.expr, 0)
         # split the expression
         self.split_expr(self.root)
+        self.left = True
         # create a list that contain the expression ,the curvature and the sign of the expression
         self.curvature_sign_list = [[str(self.expr), self.ob.expr.curvature, self.ob.expr.sign]]
         # the index of priority_op
@@ -77,6 +78,7 @@ class Visual:
         self.create_lists(self.expr)
         # create curvature_sign_list
         self.curvature_sign(self.ob.expr)
+        self.order_curvature_sign_list()
         self.curvature_sign_node(self.root)
         self.index = 0
 
@@ -496,10 +498,11 @@ class Visual:
                 new_cp1 = cp_expr1
                 new_cp2 = cp_expr2
                 # If the sign of the expression is negative multiply by minus 1 to get its true value
-                if str(cp_expr1.expr)[0] == '-':
+                if str(cp_expr1.expr)[0] == '-' and not self.left:
                     new_cp1 = cp_expr1 * (-1)
                 if str(cp_expr2.expr)[0] == '-':
                     new_cp2 = cp_expr2 * (-1)
+                self.left = False
                 self.curvature_sign_list.append([str(cp_expr1.expr), new_cp1.curvature, new_cp1.sign])
                 self.curvature_sign_list.append([str(cp_expr2.expr), new_cp2.curvature, new_cp2.sign])
                 self.index += 1
@@ -523,16 +526,36 @@ class Visual:
                 # If we found the value then we will insert the corresponding values into the node
                 if node_exp.__eq__(arg_exp):
                     node.curvature = arg[1]
-                    # To present things more clearly
-                    if str(arg[2]).__eq__("NONNEGATIVE"):
-                        arg[2] = "POSITIVE"
-                    if str(arg[2]).__eq__("NONPOSITIVE"):
-                        arg[2] = "NEGATIVE"
-                    node.sign = arg[2]
+                    if is_float(arg[0]):
+                        if float(arg[0]) < 0:
+                            node.sign = "NEGATIVE"
+                        else:
+                            node.sign = "POSITIVE"
+                    else:
+                        # To present things more clearly
+                        if str(arg[2]).__eq__("NONNEGATIVE"):
+                            arg[2] = "POSITIVE"
+                        if str(arg[2]).__eq__("NONPOSITIVE"):
+                            arg[2] = "NEGATIVE"
+                        node.sign = arg[2]
                     break
         # We will go over the children of the node and do the same
         for child in node.sons:
             self.curvature_sign_node(child)
+
+    def order_curvature_sign_list(self):
+        for arg in self.curvature_sign_list:
+            if arg[2] == "NONNEGATIVE":
+                arg[2] = "POSITIVE"
+            elif arg[2] == "NONPOSITIVE":
+                arg[2] = "NEGATIVE"
+            elif arg[2] != "NEGATIVE" and arg[2] != "POSITIVE":
+                arg[2] = "UNKNOWN"
+            if is_float(arg[0]):
+                if float(arg[0]) < 0:
+                    arg[2] = "NEGATIVE"
+                else:
+                    arg[2] = "POSITIVE"
 
     def plot_function(self, expr, xminr, xmaxr, num_points=1000):
         func = self.string_to_plot(self.expr)

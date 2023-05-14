@@ -1,11 +1,10 @@
 import cvxpy as cp
 import cvxopt
-from cvxpy import Minimize, Variable, quad_form,Problem
+from cvxpy import Minimize, Variable, quad_form, Problem
 from cvxpy.problems.objective import Maximize
 from Visual.visual import Visual
 
 if __name__ == '__main__':
-
     n = 3
     P = cvxopt.matrix([13, 12, -2,
                        12, 17, 6,
@@ -20,7 +19,7 @@ if __name__ == '__main__':
     y2 = Variable()
     z1 = Variable(n)
 
-    objective = Minimize(-1*y2**2+2*y2)
+    objective = Minimize(-1 * y2 ** 2 + 2 * y2)
     objective1 = Minimize((x2 - y2) ** 2)
     objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
 
@@ -47,4 +46,3 @@ if __name__ == '__main__':
     v.draw_graph()
     v.print_expr()
     print("----objective2----")
-

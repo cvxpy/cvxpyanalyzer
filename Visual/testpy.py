@@ -1,14 +1,6 @@
-from Visual import *
-import numpy as np
-from Visual import expression_tree, visual
-from tkinter.ttk import Treeview
-import tkinter as tk
-from tkinter import font, ttk
 import cvxpy as cp
 import cvxopt
-from cvxpy import Minimize, Problem, Variable, quad_form
-from cvxpy.problems.objective import Objective
-import operator
+from cvxpy import Minimize, Variable, quad_form
 from Visual.expression_tree import Node
 from Visual.visual import Visual
 
@@ -74,20 +66,6 @@ def test_priority():
     assert '+' == v.priority(n.expr)
     n = v.root.node_son('-').sons[1].sons[0].sons[1].sons[0].sons[0]
     assert '@' == v.priority(n.expr)
-    # stri = str(objective.expr).replace("+ -", " - ")
-    # assert stri == v.root.expr
-    # assert not v.root.checkin_sons('@')
-    # assert v.root.checkin_sons('-')
-    # n = v.root.node_son('-')
-    # assert n.checkin_sons('0.5 @ QuadForm(var1, [[13. 12. -2.] [12. 17.  6.] [-2.  6. 12.]])')
-    # n = n.sons[0]
-    # assert n.checkin_sons('@')
-    # n = n.sons[0]
-    # assert n.checkin_sons('0.5')
-    # assert n.checkin_sons('QuadForm(var1, [[13. 12. -2.] [12. 17.  6.] [-2.  6. 12.]])')
-    # n = n.sons[1]
-    # assert not n.checkin_sons('var1')
-    # assert n.checkin_sons('QuadForm')
 
 
 def test_create_lists():
@@ -108,8 +86,8 @@ def test_create_lists():
     objective2 = Minimize(0.5 * quad_form(x1, P) - cp.sum_squares(x1) + q.T @ x1 + r + y1)
     v = Visual(objective)
     rightOperators = ['@', '+']
-    rightVaribale = ['var97']
-    rightFunc = ['power(var97, 2.0)']
+    rightVaribale = ['var96']
+    rightFunc = ['power(var96, 2.0)']
     v.create_lists(v.expr)
     for e in rightFunc:
         assert e in v.func
@@ -122,9 +100,8 @@ def test_create_lists():
     assert not str(x1.expr) in v.variables
     v = Visual(objective1)
     v.create_lists(v.expr)
-    rightOperators = ['power(var96 - var97, 2.0)']
-    rightVaribale = ['var96', 'var97']
-    rightFunc = ['power(var96 - var97, 2.0)']
+    rightVaribale = ['var95', 'var96']
+    rightFunc = ['power(var95 - var96, 2.0)']
     for e in rightFunc:
         assert e in v.func
     assert not 'QuardForm' in v.func
@@ -135,8 +112,8 @@ def test_create_lists():
     v = Visual(objective2)
     v.create_lists(v.expr)
     rightOperators = ['-', '+', '@']
-    rightVaribale = ['var94']
-    rightFunc = ['QuadForm(var94, [[13. 12. -2.] [12. 17. 6.] [-2. 6. 12.]])', 'quad_over_lin(var94, 1.0)']
+    rightVaribale = ['var93']
+    rightFunc = ['QuadForm(var93, [[13. 12. -2.] [12. 17. 6.] [-2. 6. 12.]])', 'quad_over_lin(var93, 1.0)']
     for e in rightFunc:
         assert e in v.func
     assert not 'power' in v.func
@@ -161,10 +138,10 @@ def test_curvature_sign():
     objective = Minimize(-1 * x ** 2 + 2 * x)
     v = Visual(objective)
     rightCurvature_sign = [['-1.0 @ power(var1, 2.0) + 2.0 @ var1', 'CONCAVE', 'UNKNOWN'],
-                           ['-1.0 @ power(var1, 2.0)', 'CONVEX', 'POSITIVE'], ['2.0 @ var1', 'AFFINE', 'UNKNOWN'],
-                           ['-1.0', 'CONSTANT', 'POSITIVE'], ['power(var1, 2.0)', 'CONVEX', 'POSITIVE'],
+                           ['-1.0 @ power(var1, 2.0)', 'CONCAVE', 'NEGATIVE'], ['2.0 @ var1', 'AFFINE', 'UNKNOWN'],
+                           ['-1.0', 'CONSTANT', 'NEGATIVE'], ['power(var1, 2.0)', 'CONVEX', 'POSITIVE'],
                            ['var1', 'AFFINE', 'UNKNOWN'], [' 2.0', 'CONSTANT', 'POSITIVE'],
-                           ['2.0', 'CONSTANT', 'NONNEGATIVE'], ['var1', 'AFFINE', 'UNKNOWN']]
+                           ['2.0', 'CONSTANT', 'POSITIVE'], ['var1', 'AFFINE', 'UNKNOWN']]
     for c in rightCurvature_sign:
         assert c in v.curvature_sign_list
 
@@ -184,7 +161,7 @@ def test_curvature_sign():
                            ['var2', 'AFFINE', 'UNKNOWN'], ['1.0', 'CONSTANT', 'POSITIVE'],
                            ['[[-22.  -14.5  13. ]] @ var2', 'AFFINE', 'UNKNOWN'], ['1.0 + var3', 'AFFINE', 'UNKNOWN'],
                            ['[[-22.  -14.5  13. ]]', 'CONSTANT', 'UNKNOWN'], ['var2', 'AFFINE', 'UNKNOWN'],
-                           ['1.0', 'CONSTANT', 'NONNEGATIVE'], ['var3', 'AFFINE', 'UNKNOWN']]
+                           ['1.0', 'CONSTANT', 'POSITIVE'], ['var3', 'AFFINE', 'UNKNOWN']]
     for c in rightCurvature_sign:
         assert c in v.curvature_sign_list
     #
@@ -223,23 +200,18 @@ def test_insert():
     assert len(n.sons) == 0
     n.insert('+')
     assert len(n.sons[0].sons) == 2
-    assert n.sons[0].sons[0].expr.contain('h')
-    assert n.sons[0].sons[1].expr.contain('w @ x')
-    assert not n.sons[0].sons[1].expr.contain('h @ x')
+    assert str(n.sons[0].sons[0].expr).__contains__('h')
+    assert str(n.sons[0].sons[1].expr).__contains__('w @ x')
+    assert not str(n.sons[0].sons[1].expr).__contains__('h @ x')
     assert len(n.sons[0].sons[1].sons) == 0
     n.sons[0].sons[1].insert('@')
     assert len(n.sons[0].sons[1].sons) == 1
     n = Node(None, 'h', 0)
     n.insert('@')
-    assert len(n.sons[0].sons) == 0
+    assert len(n.sons) == 0
     n = Node(None, 'h @ w @ s', 0)
     n.insert('+')
-    assert len(n.sons[0].sons) == 0
-
-
-
-
-
+    assert len(n.sons) == 0
 
 
 def test_insert_func():
@@ -248,13 +220,14 @@ def test_insert_func():
     P = cvxopt.matrix([1, -2,
                        4, 12], (s, s))
     x1 = Variable(s)
-    objective= P @ x1
-    y = Node (None,'power('+str(objective)+',2.0)',0)
-    y.insert_func('power('+str(objective)+',2.0)')
+    objective = P @ x1
+    y = Node(None, 'power(' + str(objective) + ',2.0)', 0)
+    y.insert_func('power(' + str(objective) + ',2.0)')
     assert y.sons[0].expr == 'power'
     assert y.sons[0].sons[0].expr.__contains__(str(objective))
     n.insert_func('quad_over_lin(var2, 1.0)')
     assert n.sons[0].sons[0].expr.__contains__('var2')
+
 
 # --------------expression_tree--------------
 
@@ -262,3 +235,5 @@ test_curvature_sign()
 test_split_expr()
 test_priority()
 test_create_lists()
+test_insert()
+test_insert_func()
