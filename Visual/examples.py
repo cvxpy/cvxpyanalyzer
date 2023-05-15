@@ -1,7 +1,6 @@
 import cvxpy as cp
 import cvxopt
-from cvxpy import Minimize, Variable, quad_form, Problem
-from cvxpy.problems.objective import Maximize
+from cvxpy import Minimize, Variable, quad_form
 from Visual.visual import Visual
 
 if __name__ == '__main__':

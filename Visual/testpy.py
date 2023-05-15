@@ -4,7 +4,7 @@ import numpy as np
 from cvxpy import Minimize, Variable, quad_form
 from Visual.expression_tree import Node
 from Visual.visual import Visual
-
+import pytest
 
 # --------------visual--------------
 def test_split_expr():
@@ -77,7 +77,7 @@ def test_create_lists():
     q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
     r = 1
 
-    x1 = Variable(n,name='var3')
+    x1 = Variable(n, name='var3')
     y1 = Variable(name='y1')
     x2 = Variable(name='var1')
     y2 = Variable(name='var2')
@@ -134,7 +134,7 @@ def test_curvature_sign():
                        -2, 6, 12], (n, n))
     q = cvxopt.matrix([-22, -14.5, 13], (n, 1))
     r = 1
-    x1 = Variable(n,name='var2')
+    x1 = Variable(n, name='var2')
     y1 = Variable(name='var3')
     objective = Minimize(-1 * x ** 2 + 2 * x)
     v = Visual(objective)
@@ -219,8 +219,8 @@ def test_insert():
                        0, 1, 6, 73,
                        43, 100, 54, 2], (s, s))
     WorngP = '[[  1.   4.   0.  43.]\n [ -2.  12.   1. 100.]\n [ 10.  99.   6.  54.]\n [ 17.  13.  73.   1.]] '
-    x1 = Variable(s,name='var9')
-    x2 = Variable((s,s), symmetric=True,name='var10')
+    x1 = Variable(s, name='var9')
+    x2 = Variable((s, s), symmetric=True, name='var10')
     objective = P @ x1
     y = Node(None, str(objective), 0)
     y.insert('+')
@@ -242,19 +242,13 @@ def test_insert():
     assert y.sons[0].sons[1].expr.__contains__('var10')
     objective = (P + x2) @ x1
     y = Node(None, str(objective), 0)
-    #y.insert('+')
-    #assert len(y.sons) == 0
+    # y.insert('+')
+    # assert len(y.sons) == 0
     y.insert('@')
     assert len(y.sons) == 1
     assert y.sons[0].sons[1].expr.__contains__('var9')
-    assert y.sons[0].sons[0].expr.__contains__('([[  1.   4.   0.  43.]\n [ -2.  12.   1. 100.]\n [ 10.  99.   6.  54.]\n [ 17.  13.  73.   2.]] + var10) ')
-
-
-
-
-
-
-
+    assert y.sons[0].sons[0].expr.__contains__(
+        '([[  1.   4.   0.  43.]\n [ -2.  12.   1. 100.]\n [ 10.  99.   6.  54.]\n [ 17.  13.  73.   2.]] + var10) ')
 
 
 def test_insert_func():
@@ -302,12 +296,7 @@ def test_insert_func():
     assert n3.sons[0].sons[0].expr == 'var1'
 
 
-
 # --------------expression_tree--------------
 
-test_curvature_sign()
-test_split_expr()
-test_priority()
-test_create_lists()
-test_insert()
-test_insert_func()
+pytest.main()
+
