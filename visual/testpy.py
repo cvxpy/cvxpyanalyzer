@@ -2,9 +2,11 @@ import cvxpy as cp
 import cvxopt
 import numpy as np
 from cvxpy import Minimize, Variable, quad_form
-from Visual.expression_tree import Node
-from Visual.visual import Visual
 import pytest
+
+from visual.expression_tree import Node
+from visual.visual_expression import Visual
+
 
 # --------------visual--------------
 def test_split_expr():
@@ -299,4 +301,3 @@ def test_insert_func():
 # --------------expression_tree--------------
 
 pytest.main()
-

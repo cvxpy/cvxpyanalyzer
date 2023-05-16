@@ -1,7 +1,7 @@
 import cvxpy as cp
 import cvxopt
 from cvxpy import Minimize, Variable, quad_form
-from Visual.visual import Visual
+from visual.visual_expression import Visual
 
 if __name__ == '__main__':
     n = 3

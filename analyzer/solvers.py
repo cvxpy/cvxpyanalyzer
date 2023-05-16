@@ -13,7 +13,7 @@ from cvxpy.constraints import (
 from cvxpy.error import DCPError
 import cvxpy as cp
 
-from Visual.visual import prob
+from visual.visual_expression import prob
 
 
 def get_solvers(problem):

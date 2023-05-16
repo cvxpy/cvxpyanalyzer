@@ -1,16 +1,14 @@
 from tkinter.ttk import Treeview
 import tkinter as tk
 from tkinter import font, ttk
-import cvxpy
-import cp as cp
+
 import numpy as np
-from cvxpy import Variable, quad_form
 from cvxpy.problems.objective import Objective, Minimize
 import operator
 import re
 from graphviz import Digraph
 from matplotlib import pyplot as plt
-from Visual.expression_tree import Node
+from visual.expression_tree import Node
 
 """
 first we split the expression according to the high priority
