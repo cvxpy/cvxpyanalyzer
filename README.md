@@ -70,7 +70,7 @@ You will get the following graph: <br />
 **Please note that you can run only one example at a time and not all of them together. If you run all of them together, the output file will show only the graph of the last example that was executed** <br />
 
 
-## v.root.print_tree():
+## v.print_expr():
 This function prints the expression in the structure of a tree in the RUN window.
 
 ```
