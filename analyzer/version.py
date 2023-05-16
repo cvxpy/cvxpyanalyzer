@@ -27,3 +27,6 @@ def check_version():
     else:
         msg = "The request to pypi returned status code" + str(r.status_code)
         raise RuntimeError(msg)
+
+
+check_version()
